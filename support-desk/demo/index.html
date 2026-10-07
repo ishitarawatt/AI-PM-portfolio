@@ -267,6 +267,7 @@ select, input[type="text"], textarea { border-radius: 12px; }
   @keyframes drift3 { 0% { transform: translate(0, 0) scale(.95); } 50% { transform: translate(-16vw, -14%) scale(1.2); } 100% { transform: translate(0, 0) scale(.95); } }
   @keyframes flow { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
   .aurora { animation: flow 24s linear infinite; }
+  body.busy .aurora, body.busy .aurora i { animation-play-state: paused; }
   .aurora i:nth-child(1) { animation: drift1 15s ease-in-out infinite; }
   .aurora i:nth-child(2) { animation: drift2 18s ease-in-out infinite; }
   .aurora i:nth-child(3) { animation: drift3 21s ease-in-out infinite; }
@@ -774,8 +775,18 @@ const firstName = (cid) => (CUSTOMERS[cid]?.name || cid).split(" ")[0];
 let store = new Store(), results = new Map(), tickets = [...INBOX], selected = "T-101";
 let engine = "example", busy = false, ctl = null, customCount = 0;
 
+// Rebuild into a detached node and touch the page only when the markup really changed, so a run never flashes.
+function commit(el, next) { if (el.innerHTML !== next.innerHTML) el.replaceChildren(...next.childNodes); }
+let raf = 0, last = 0;
+function softRender(fn) { // at most one repaint per ~120ms while a run streams updates
+  const now = performance.now();
+  if (raf) return;
+  raf = setTimeout(() => { raf = 0; last = performance.now(); fn(); }, Math.max(0, 120 - (now - last)));
+}
 function renderInbox() {
-  const ul = $("inbox"); ul.replaceChildren();
+  const ul = document.createElement("ul"); commit_inbox(ul); commit($("inbox"), ul);
+}
+function commit_inbox(ul) {
   for (const t of tickets) {
     const r = results.get(t.id), st = r ? r.status : "queued";
     const what = !r ? "" : r.action_executed ? describe(r.action_executed) : r.pending_action ? "waiting: " + describe(r.pending_action)
@@ -796,7 +807,9 @@ function renderPipeline(r) {
 }
 
 function renderDetail() {
-  const d = $("detail"); d.replaceChildren();
+  const d = document.createElement("div"); build_detail(d); commit($("detail"), d);
+}
+function build_detail(d) {
   const t = tickets.find(x => x.id === selected); if (!t) return;
   const r = results.get(t.id), st = r ? r.status : "queued";
   d.append(h("div", { class: "dhead" }, h("div", {}, h("span", { class: "eyebrow" }, `${t.id} · from ${CUSTOMERS[t.customer_id]?.name || t.customer_id} (${t.customer_id})`), h("h3", {}, t.subject || "(no subject)")),
@@ -914,7 +927,7 @@ function setEngine(next) {
 
 async function runTickets(list, animate) {
   if (busy) return;
-  busy = true;
+  busy = true; document.body.classList.add("busy");
   ["process", "reset", "c-send"].forEach(id => { $(id).disabled = true; });
   ctl = engine === "live" ? new AbortController() : null; $("stop").hidden = !ctl;
   const inject = $("inject").value;
@@ -922,7 +935,7 @@ async function runTickets(list, animate) {
     for (const t of list) {
       if (ctl?.signal.aborted) break;
       const r = await process(t, { store, engine, inject, signal: ctl?.signal, pace: animate && engine === "example" ? 70 : 0,
-        onUpdate: (rr) => { results.set(t.id, rr); if (animate || engine === "live") { if (selected === t.id) renderDetail(); renderInbox(); } } });
+        onUpdate: (rr) => { results.set(t.id, rr); if (animate || engine === "live") { softRender(() => { if (selected === t.id) renderDetail(); renderInbox(); }); } } });
       results.set(t.id, r);
       if (r.error && ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"].includes(r.error.code)) {
         $("eng-live").disabled = true; setEngine("example"); note.textContent = "Live mode isn't available here, so the example engine is selected."; note.classList.add("err"); break;
@@ -930,7 +943,8 @@ async function runTickets(list, animate) {
       if (animate) renderOps();
     }
   } finally {
-    busy = false; ctl = null; $("stop").hidden = true;
+    busy = false; ctl = null; $("stop").hidden = true; document.body.classList.remove("busy");
+    clearTimeout(raf); raf = 0;
     ["process", "reset", "c-send"].forEach(id => { $(id).disabled = false; });
     renderAll();
   }
