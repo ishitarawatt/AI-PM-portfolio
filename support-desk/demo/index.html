@@ -15,38 +15,38 @@
 /* Palette: Dusty Blue + Lavender. Lavender-grey page, lilac and mist-blue cards, muted-navy actions,
    charcoal-blue text. Semantic colours are muted to sit in the same soft tone. */
 :root {
-  --bg: #E5E1E6;          /* lavender grey: page */
-  --panel: #F3F1F4;       /* lightest lavender: dense panels and tables stay readable */
-  --card: #D8CEDD;        /* muted lilac: tickets, tiles */
-  --card-2: #C4D0D9;      /* mist blue: replies, selected items */
-  --ink: #303A43;         /* charcoal blue: text */
-  --muted: #4A545E;       /* slate, deepened so small text stays legible on lilac */
-  --rule: #C3B6CF;        /* soft lavender: borders */
-  --accent: #52667A;      /* muted navy: buttons, selection, links */
+  --bg: #F4F1FF;          /* swatch: near-white lavender, page */
+  --panel: #FFFFFF;       /* dense panels and tables stay readable */
+  --card: #D7C9F2;        /* swatch: lavender, tickets and tiles */
+  --card-2: #B9D6F2;      /* swatch: sky blue, replies and selected items */
+  --ink: #232A4A;         /* deepened #3F4A73 for text */
+  --muted: #3F4A73;       /* swatch: indigo */
+  --rule: #A3A0B8;        /* swatch: grey lavender, borders */
+  --accent: #3F4A73;      /* swatch: indigo, buttons and selection */
   --accent-ink: #FFFFFF;
-  --accent-bg: #C4D0D9;   /* mist blue */
-  --ok: #3E6B57;   --ok-bg: #D6E2DB;
-  --bad: #9A3B46;  --bad-bg: #F0DCDF;
-  --warn: #7A5A1E; --warn-bg: #EEE2CC;
-  --info: #415468; --info-bg: #C4D0D9;
-  --bubble: #E5E1E6;
+  --accent-bg: #B9D6F2;
+  --ok: #2F6B52;   --ok-bg: #D3EADD;
+  --bad: #9A3B46;  --bad-bg: #F6DDE1;
+  --warn: #7A5A1E; --warn-bg: #F3E6CC;
+  --info: #3F4A73; --info-bg: #B9D6F2;
+  --bubble: #F4F1FF;
   --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #262E35; --panel: #303A43; --card: #3A4550; --card-2: #44525F; --ink: #E5E1E6; --muted: #C4D0D9; --rule: #4E5966;
-    --accent: #8FA6B8; --accent-ink: #262E35; --accent-bg: #44525F;
+    --bg: #1C2036; --panel: #262B47; --card: #323861; --card-2: #3F4A73; --ink: #F4F1FF; --muted: #B9D6F2; --rule: #4F5580;
+    --accent: #B9D6F2; --accent-ink: #1C2036; --accent-bg: #3F4A73;
     --ok: #93C7AA; --ok-bg: #2E4339; --bad: #E7A6AF; --bad-bg: #4A2F35; --warn: #E3C58A; --warn-bg: #463B27;
-    --info: #C3B6CF; --info-bg: #453F51; --bubble: #3A4550;
+    --info: #D7C9F2; --info-bg: #3A3F6B; --bubble: #323861;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #262E35; --panel: #303A43; --card: #3A4550; --card-2: #44525F; --ink: #E5E1E6; --muted: #C4D0D9; --rule: #4E5966;
-  --accent: #8FA6B8; --accent-ink: #262E35; --accent-bg: #44525F;
+  --bg: #1C2036; --panel: #262B47; --card: #323861; --card-2: #3F4A73; --ink: #F4F1FF; --muted: #B9D6F2; --rule: #4F5580;
+  --accent: #B9D6F2; --accent-ink: #1C2036; --accent-bg: #3F4A73;
   --ok: #93C7AA; --ok-bg: #2E4339; --bad: #E7A6AF; --bad-bg: #4A2F35; --warn: #E3C58A; --warn-bg: #463B27;
-  --info: #C3B6CF; --info-bg: #453F51; --bubble: #3A4550;
+  --info: #D7C9F2; --info-bg: #3A3F6B; --bubble: #323861;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
