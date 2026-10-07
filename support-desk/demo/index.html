@@ -8,7 +8,7 @@
 <title>Support Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: a support operations console. Controls on top; inbox (left) beside the selected
    ticket's journey (right); then the ops view: dashboard, approval queue, order book, audit log. */
@@ -31,6 +31,9 @@
   --info: #3F4A73; --info-bg: #B9D6F2;
   --bubble: #F4F1FF;
   --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-doc: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --nav-bg: #3F4A73; --nav-ink: #FFFFFF; --nav-chip: #B9D6F2;
+  --shadow: 0 1px 2px rgba(35,42,74,.06), 0 12px 32px rgba(35,42,74,.08);
   --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 :root[data-theme="dark"] {
@@ -38,6 +41,7 @@
   --accent: #B9D6F2; --accent-ink: #1C2036; --accent-bg: #3F4A73;
   --ok: #93C7AA; --ok-bg: #2E4339; --bad: #E7A6AF; --bad-bg: #4A2F35; --warn: #E3C58A; --warn-bg: #463B27;
   --info: #D7C9F2; --info-bg: #3A3F6B; --bubble: #323861;
+  --nav-bg: #262B47; --nav-ink: #F4F1FF; --nav-chip: #B9D6F2; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.3);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -169,15 +173,128 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-widt
   .pipeline li[data-state="running"] .state { animation: pulse 1.2s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: .45; } }
 }
+
+/* ---- Interface matched to the Job Application Copilot page: sticky nav, drifting colour behind the hero,
+   centred headline, pill controls, ticker, and one column that flows downward with thin dividers instead of boxes. */
+html { scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+.page { max-width: 780px; padding-block: 28px 64px; gap: 32px; position: relative; z-index: 1; }
+nav.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; position: sticky; top: 0; z-index: 20;
+  background: var(--nav-bg); color: var(--nav-ink); padding-block: 14px; padding-inline: max(16px, calc((100% - 780px) / 2 + 20px)); }
+nav.top .brand { font: 700 15px/1 var(--f-ui); display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; }
+nav.top .brand i { width: 22px; height: 22px; border-radius: 7px; background: var(--nav-chip); display: inline-block; }
+nav.top .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+nav.top .tags a { font: 500 12.5px/1 var(--f-ui); color: var(--nav-ink); text-decoration: none; border: 1px solid color-mix(in srgb, var(--nav-ink) 45%, var(--nav-bg)); border-radius: 999px; padding: 8px 13px; transition: background-color .18s ease, color .18s ease; }
+nav.top .tags a:hover { background: color-mix(in srgb, var(--nav-ink) 18%, var(--nav-bg)); }
+nav.top a:focus-visible { outline: 2px solid var(--nav-ink); outline-offset: 2px; }
+#desk, #tiles, #ops, #audit, #top { scroll-margin-top: 76px; }
+@media (max-width: 560px) { html { scroll-padding-top: 112px; } #desk, #tiles, #ops, #audit, #top { scroll-margin-top: 112px; } nav.top .tags { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; } nav.top .tags a { white-space: nowrap; } }
+
+header { justify-items: center; text-align: center; gap: 14px; padding-block: 18px 6px; }
+header h1 { font: 800 clamp(34px, 6vw, 58px)/1.05 var(--f-ui); letter-spacing: -.025em; max-width: 18ch; }
+header h1 em { font-family: var(--f-doc); font-weight: 600; letter-spacing: -.01em; }
+header .thesis { font: 400 clamp(16px, 2vw, 19px)/1.5 var(--f-ui); max-width: 56ch; }
+.hero-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; font: 600 13px/1.2 var(--f-ui); color: var(--muted); }
+.hero-stats b { color: var(--ink); font-size: 15px; }
+
+.ticker { overflow: hidden; border-block: 1px solid var(--rule); padding-block: 10px; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.ticker .track { display: flex; gap: 28px; width: max-content; font: 600 13px/1 var(--f-ui); color: var(--ink); white-space: nowrap; }
+.ticker .track span::before { content: "✓ "; }
+
+.card { display: grid; gap: 18px; }
+.controls { gap: 12px 18px; }
+.seg { border-radius: 999px; padding: 3px; }
+.seg button { border-radius: 999px; padding: 9px 14px; color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.seg button:disabled { opacity: .65; }
+.btn { border-radius: 999px; padding: 13px 24px; font-size: 14px; }
+.btn.ghost { background: var(--card); color: var(--ink); border: 0; }
+.btn.small { padding: 9px 14px; font-size: 12.5px; }
+.btn.danger { background: transparent; }
+select, input[type="text"], textarea { border-radius: 12px; }
+
+.step { display: flex; align-items: center; gap: 10px; font: 700 15px/1.2 var(--f-ui); }
+.step b { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--bg); display: inline-grid; place-items: center; font-size: 13px; flex: none; }
+
+/* sections flow in one column, divided by a thin line */
+.desk, .ops { grid-template-columns: 1fr; gap: 0; }
+.panel { background: transparent; border: 0; border-radius: 0; box-shadow: none; padding-inline: 0; padding-block: 26px 4px; border-top: 1px solid var(--rule); }
+.desk > .panel:first-child { border-top: 0; padding-top: 4px; }
+.inbox { grid-template-columns: 1fr 1fr; gap: 10px; }
+.ticket { border-radius: 14px; }
+.tile { border-radius: 14px; }
+.bubble { border-radius: 14px; }
+.pipeline { grid-template-columns: repeat(4, minmax(0, 1fr)); border-radius: 18px; background: var(--card-2); }
+.pipeline li { border-bottom: 1px solid var(--rule); padding: 12px 14px; }
+.pipeline li:nth-child(4n) { border-right: 0; }
+.pipeline li:nth-last-child(-n+3) { border-bottom: 0; }
+.pipeline .kind, .pipeline .state { color: var(--ink); }
+.pipeline li[data-state="done"] .state { color: var(--ok); }
+.pipeline li[data-state="rejected"] .state { color: var(--warn); }
+.pipeline li[data-state="failed"] .state { color: var(--bad); }
+.pipeline li[data-state="routed"] .state { color: var(--accent); }
+.dhead h3 { font: 600 18px/1.3 var(--f-doc); }
+.bubble { font: 400 15px/1.55 var(--f-doc); }
+.tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  header > * { animation: rise .7s cubic-bezier(.2, .7, .2, 1) both; }
+  header > :nth-child(2) { animation-delay: .08s; } header > :nth-child(3) { animation-delay: .16s; } header > :nth-child(4) { animation-delay: .24s; }
+  nav.top { animation: rise .6s ease both; }
+  .ticker .track { animation: slide 32s linear infinite; }
+  .ticker:hover .track { animation-play-state: paused; }
+  .reveal { transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
+  .reveal:not(.in) { opacity: 0; transform: translateY(18px); }
+  .ticket, .tile, .attempts li, .queue li, .pill { animation: rise .5s cubic-bezier(.2, .7, .2, 1) both; }
+  .btn, .seg button { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(35, 42, 74, .16); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .pipeline li[data-state="running"]::after { background: linear-gradient(90deg, var(--info), var(--rule), var(--info)); background-size: 200% 100%; animation: sweep 1.4s linear infinite; }
+  @keyframes sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+}
+
+/* moving colour behind the top of the page: sky #B9D6F2, lavender #D7C9F2 and grey-lavender #A3A0B8 drift and blend slowly */
+.aurora { position: absolute; inset: 0 0 auto 0; height: 760px; z-index: 0; overflow: hidden; pointer-events: none;
+  background: linear-gradient(115deg, #B9D6F2, #D7C9F2, #A3A0B8, #B9D6F2); background-size: 300% 100%; opacity: .9;
+  -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent); }
+.aurora::after { content: ""; position: absolute; inset: 0; background: var(--bg); opacity: .6; }
+.aurora i { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .7; z-index: 1; }
+.aurora i:nth-child(1) { width: 520px; height: 520px; left: -8%; top: -12%; background: #B9D6F2; }
+.aurora i:nth-child(2) { width: 480px; height: 480px; right: -6%; top: 2%; background: #D7C9F2; }
+.aurora i:nth-child(3) { width: 540px; height: 540px; left: 30%; top: 18%; background: #A3A0B8; }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes drift1 { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(22vw, 16%) scale(1.15); } 100% { transform: translate(0, 0) scale(1); } }
+  @keyframes drift2 { 0% { transform: translate(0, 0) scale(1.1); } 50% { transform: translate(-24vw, 20%) scale(.9); } 100% { transform: translate(0, 0) scale(1.1); } }
+  @keyframes drift3 { 0% { transform: translate(0, 0) scale(.95); } 50% { transform: translate(-16vw, -14%) scale(1.2); } 100% { transform: translate(0, 0) scale(.95); } }
+  @keyframes flow { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+  .aurora { animation: flow 24s linear infinite; }
+  .aurora i:nth-child(1) { animation: drift1 15s ease-in-out infinite; }
+  .aurora i:nth-child(2) { animation: drift2 18s ease-in-out infinite; }
+  .aurora i:nth-child(3) { animation: drift3 21s ease-in-out infinite; }
+}
+@media (max-width: 860px) { .inbox { grid-template-columns: 1fr; } .pipeline { grid-template-columns: 1fr 1fr; } .pipeline li { border-right: 1px solid var(--rule) !important; border-bottom: 1px solid var(--rule) !important; } .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 </style>
 
-<div class="page">
+<nav class="top" aria-label="Main">
+  <a class="brand" href="#top"><i></i>Support Desk</a>
+  <span class="tags"><a href="#desk">Inbox</a><a href="#tiles">Dashboard</a><a href="#ops">Approvals</a><a href="#audit">Audit log</a></span>
+</nav>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="page" id="top">
   <header>
-    <span class="eyebrow">Multi-agent demo</span>
-    <h1>Support Desk</h1>
+    <h1>Resolve support tickets, <em>without letting AI touch the money.</em></h1>
     <p class="thesis">AI agents resolve routine support tickets end to end, including refunds. <b>AI proposes, code decides:</b> no model output can move money unless the Policy Guard allows it, and anything over $100 waits for a person.</p>
+    <div class="hero-stats"><span><b>Plain code</b> approves every refund</span><span><b>$100+</b> waits for a person</span><span><b>Every action</b> audited</span></div>
   </header>
 
+  <div class="ticker" aria-hidden="true"><div class="track">
+    <span>AI proposes, code decides</span><span>Refunds over $100 wait for a person</span><span>Delivered orders only</span><span>30-day refund window</span><span>No double refunds</span><span>Every action audited</span>
+    <span>AI proposes, code decides</span><span>Refunds over $100 wait for a person</span><span>Delivered orders only</span><span>30-day refund window</span><span>No double refunds</span><span>Every action audited</span>
+  </div></div>
+
+  <div class="card reveal">
   <section class="controls" aria-label="Run">
     <div class="seg" role="group" aria-label="Engine">
       <button type="button" id="eng-example" aria-pressed="true">Example engine</button>
@@ -190,8 +307,11 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-widt
     <button class="btn ghost" type="button" id="reset">Reset data</button>
     <p class="note" id="engine-note"></p>
   </section>
+  </div>
 
-  <section class="desk">
+  <div class="step" id="desk-step"><b>✓</b> Your results</div>
+
+  <section class="desk reveal" id="desk">
     <div class="panel">
       <h2>Inbox <small>· 11 sample tickets</small></h2>
       <ul class="inbox" id="inbox"></ul>
@@ -208,9 +328,9 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-widt
     <article class="panel detail" id="detail" aria-live="polite"></article>
   </section>
 
-  <section class="tiles" id="tiles" aria-label="Dashboard"></section>
+  <section class="tiles reveal" id="tiles" aria-label="Dashboard"></section>
 
-  <section class="ops">
+  <section class="ops reveal" id="ops">
     <div class="panel">
       <h2>Approval queue <small>· refunds over $100 wait for a person</small></h2>
       <ul class="queue" id="queue"></ul>
@@ -221,7 +341,7 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-widt
     </div>
   </section>
 
-  <section class="panel" aria-label="Audit log">
+  <section class="panel reveal" id="audit" aria-label="Audit log">
     <h2>Audit log <small>· every action attempted, executed, refused, queued or approved</small></h2>
     <div class="table-wrap"><table id="audit"><thead><tr><th>#</th><th>Ticket</th><th>Event</th><th>Action</th><th>Result</th></tr></thead><tbody></tbody></table></div>
   </section>
@@ -855,6 +975,15 @@ runTickets([...INBOX], false);
 if (window.claude?.use) {
   window.claude.use("sample").then(s => { if (s) { sample = s; $("eng-live").disabled = false; } }).catch(() => {});
 }
+})();
+</script>
+<script>
+(() => {
+  const els = document.querySelectorAll(".reveal");
+  if (!("IntersectionObserver" in window)) { els.forEach(e => e.classList.add("in")); return; }
+  const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.05 });
+  els.forEach(e => io.observe(e));
+  setTimeout(() => els.forEach(e => e.classList.add("in")), 2500);
 })();
 </script>
 
