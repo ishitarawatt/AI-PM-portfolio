@@ -44,8 +44,10 @@
   --nav-bg: #1B3440; --nav-ink: #EEEDE7; --nav-chip: #84A98C; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.3);
   color-scheme: dark;
 }
+html { scrollbar-gutter: stable; overflow-y: scroll; }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font: 14.5px/1.5 var(--f-ui); }
+.detail { min-height: 560px; }
 .page { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 26px 60px; display: grid; gap: 24px; }
 h1, h2, h3 { margin: 0; text-wrap: balance; }
 p { margin: 0; }
@@ -253,11 +255,11 @@ select, input[type="text"], textarea { border-radius: 12px; }
 }
 
 /* moving colour behind the top of the page: eucalyptus #84A98C, mist sage #B8C4BB and muted teal #52796F drift and blend slowly */
-.aurora { position: absolute; inset: 0 0 auto 0; height: 760px; z-index: 0; overflow: hidden; pointer-events: none;
+.aurora { contain: strict; transform: translateZ(0); position: absolute; inset: 0 0 auto 0; height: 760px; z-index: 0; overflow: hidden; pointer-events: none;
   background: linear-gradient(115deg, #84A98C, #B8C4BB, #52796F, #84A98C); background-size: 300% 100%; opacity: .9;
   -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent); }
 .aurora::after { content: ""; position: absolute; inset: 0; background: var(--bg); opacity: .6; }
-.aurora i { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .7; z-index: 1; }
+.aurora i { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .7; z-index: 1; will-change: transform; backface-visibility: hidden; }
 .aurora i:nth-child(1) { width: 520px; height: 520px; left: -8%; top: -12%; background: #84A98C; }
 .aurora i:nth-child(2) { width: 480px; height: 480px; right: -6%; top: 2%; background: #B8C4BB; }
 .aurora i:nth-child(3) { width: 540px; height: 540px; left: 30%; top: 18%; background: #52796F; }
@@ -265,9 +267,6 @@ select, input[type="text"], textarea { border-radius: 12px; }
   @keyframes drift1 { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(22vw, 16%) scale(1.15); } 100% { transform: translate(0, 0) scale(1); } }
   @keyframes drift2 { 0% { transform: translate(0, 0) scale(1.1); } 50% { transform: translate(-24vw, 20%) scale(.9); } 100% { transform: translate(0, 0) scale(1.1); } }
   @keyframes drift3 { 0% { transform: translate(0, 0) scale(.95); } 50% { transform: translate(-16vw, -14%) scale(1.2); } 100% { transform: translate(0, 0) scale(.95); } }
-  @keyframes flow { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
-  .aurora { animation: flow 24s linear infinite; }
-  body.busy .aurora, body.busy .aurora i { animation-play-state: paused; }
   .aurora i:nth-child(1) { animation: drift1 15s ease-in-out infinite; }
   .aurora i:nth-child(2) { animation: drift2 18s ease-in-out infinite; }
   .aurora i:nth-child(3) { animation: drift3 21s ease-in-out infinite; }
@@ -927,7 +926,7 @@ function setEngine(next) {
 
 async function runTickets(list, animate) {
   if (busy) return;
-  busy = true; document.body.classList.add("busy");
+  busy = true;
   ["process", "reset", "c-send"].forEach(id => { $(id).disabled = true; });
   ctl = engine === "live" ? new AbortController() : null; $("stop").hidden = !ctl;
   const inject = $("inject").value;
@@ -943,7 +942,7 @@ async function runTickets(list, animate) {
       if (animate) renderOps();
     }
   } finally {
-    busy = false; ctl = null; $("stop").hidden = true; document.body.classList.remove("busy");
+    busy = false; ctl = null; $("stop").hidden = true;
     clearTimeout(raf); raf = 0;
     ["process", "reset", "c-send"].forEach(id => { $(id).disabled = false; });
     renderAll();
