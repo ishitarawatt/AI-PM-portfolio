@@ -1,0 +1,8 @@
+{
+  "ORD-1001": {"id": "ORD-1001", "customer_id": "C1", "items": ["Wireless headphones"], "total": 45.00, "refunded": 0.0, "status": "delivered", "delivered_on": "2026-09-30"},
+  "ORD-1002": {"id": "ORD-1002", "customer_id": "C1", "items": ["Running shoes"], "total": 80.00, "refunded": 0.0, "status": "processing", "delivered_on": null},
+  "ORD-1003": {"id": "ORD-1003", "customer_id": "C2", "items": ["Blender"], "total": 30.00, "refunded": 0.0, "status": "delivered", "delivered_on": "2026-08-01"},
+  "ORD-1004": {"id": "ORD-1004", "customer_id": "C2", "items": ["TV stand"], "total": 250.00, "refunded": 0.0, "status": "delivered", "delivered_on": "2026-10-01"},
+  "ORD-1005": {"id": "ORD-1005", "customer_id": "C3", "items": ["Smart speaker"], "total": 60.00, "refunded": 0.0, "status": "shipped", "delivered_on": null},
+  "ORD-1006": {"id": "ORD-1006", "customer_id": "C3", "items": ["USB-C cable"], "total": 20.00, "refunded": 20.00, "status": "delivered", "delivered_on": "2026-10-03"}
+}

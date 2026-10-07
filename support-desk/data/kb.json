@@ -1,0 +1,16 @@
+[
+  {"id": "KB-101", "title": "Refund policy", "tags": ["refund", "money back", "damaged", "broken", "defective", "faulty"],
+   "text": "Delivered orders can be refunded within 30 days of delivery. Refunds go back to the original payment method and appear in 5-7 business days. Refunds over $100 are reviewed by our team within 24 hours."},
+  {"id": "KB-102", "title": "Returns", "tags": ["return", "cancel", "shipped"],
+   "text": "Shipped orders can't be cancelled, but you can return any item within 30 days of delivery for a full refund. Start a return from Orders > Return item."},
+  {"id": "KB-103", "title": "Cancelling an order", "tags": ["cancel", "cancellation"],
+   "text": "Orders can be cancelled free of charge while they are still processing. Once an order ships it can no longer be cancelled."},
+  {"id": "KB-104", "title": "Shipping times", "tags": ["shipping", "where", "tracking", "status", "arrive", "arrived", "late"],
+   "text": "Standard shipping takes 3-5 business days after dispatch. Express takes 1-2 business days. You'll get a tracking link by email when your order ships."},
+  {"id": "KB-105", "title": "Password reset", "tags": ["password", "login", "log in", "locked", "sign in"],
+   "text": "Use 'Forgot password' on the sign-in page, or ask support to send a reset link. Reset links expire after 1 hour."},
+  {"id": "KB-106", "title": "Warranty", "tags": ["warranty", "guarantee", "defect"],
+   "text": "All electronics carry a 1-year limited warranty covering manufacturing defects. Accidental damage is not covered."},
+  {"id": "KB-107", "title": "International shipping", "tags": ["international", "countries", "duties", "abroad"],
+   "text": "We ship to 40 countries. Import duties are paid by the recipient."}
+]
