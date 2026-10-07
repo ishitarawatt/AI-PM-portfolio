@@ -170,8 +170,6 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-widt
 @media (max-width: 460px) { .pipeline { grid-template-columns: 1fr 1fr; } }
 @media (prefers-reduced-motion: no-preference) {
   .pipeline li { transition: background-color .2s ease; }
-  .pipeline li[data-state="running"] .state { animation: pulse 1.2s ease-in-out infinite; }
-  @keyframes pulse { 50% { opacity: .45; } }
 }
 
 /* ---- Interface matched to the Job Application Copilot page: sticky nav, drifting colour behind the hero,
@@ -247,9 +245,8 @@ select, input[type="text"], textarea { border-radius: 12px; }
   .ticker:hover .track { animation-play-state: paused; }
   .reveal { transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
   .reveal:not(.in) { opacity: 0; transform: translateY(18px); }
-  .ticket, .tile, .attempts li, .queue li, .pill { animation: rise .5s cubic-bezier(.2, .7, .2, 1) both; }
   .btn, .seg button { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
-  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(35, 42, 74, .16); }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(27, 52, 64, .16); }
   .btn:active:not(:disabled) { transform: translateY(0); }
   .pipeline li[data-state="running"]::after { background: linear-gradient(90deg, var(--info), var(--rule), var(--info)); background-size: 200% 100%; animation: sweep 1.4s linear infinite; }
   @keyframes sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
