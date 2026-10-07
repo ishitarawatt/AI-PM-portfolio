@@ -298,7 +298,7 @@ select, input[type="text"], textarea { border-radius: 12px; }
   <section class="controls" aria-label="Run">
     <div class="seg" role="group" aria-label="Engine">
       <button type="button" id="eng-example" aria-pressed="true">Example engine</button>
-      <button type="button" id="eng-live" aria-pressed="false" disabled>Claude (live)</button>
+      <button type="button" id="eng-live" aria-pressed="false" disabled>Live AI</button>
     </div>
     <label class="inline" for="inject">Slip a problem into the first draft
       <select id="inject"><option value="">none</option><option value="rogue">rogue $999 refund</option><option value="promise">false "I've refunded you"</option></select></label>
@@ -348,7 +348,7 @@ select, input[type="text"], textarea { border-radius: 12px; }
 
   <footer>
     <p>How it stays safe: the Resolver (an AI) can only propose one action. The Policy Guard, plain code, decides: refunds only for the ticket owner's delivered orders, within 30 days, never more than the refundable balance, and anything over $100 goes to the approval queue. The QA Critic, also code, blocks replies that claim something the system didn't do, state the wrong amount, mention someone else's order or aren't grounded in a help article. The Executor re-checks the hard limits itself and never runs the same action twice. Escalation and approval messages are fixed templates, never generated.</p>
-    <p>Live mode sends ticket text to Claude using your own Claude account and asks your permission first. Card numbers and emails are removed before anything is sent.</p>
+    <p>Live mode sends ticket text to the live AI model using your own account and asks your permission first. Card numbers and emails are removed before anything is sent.</p>
   </footer>
 </div>
 
@@ -629,7 +629,7 @@ const T = {
 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
 async function process(ticket, { store, engine, inject, signal, pace = 0, onUpdate = () => {} }) {
-  const E = engine === "live" ? live : example, engName = engine === "live" ? "claude" : "example";
+  const E = engine === "live" ? live : example, engName = engine === "live" ? "live" : "example";
   const r = { ticket_id: ticket.id, customer_id: ticket.customer_id, original: ticket, clean: null, status: "running", customer_reply: "", followup: "",
               action_executed: null, pending_action: null, triage: null, kb_used: [], flags: [], handoff: null, attempts: [], stages: {}, trace: [], engine: engName };
   const stage = async (k, state, text, times) => { r.stages[k] = { state, text, times }; onUpdate(r); if (state === "running" && pace) await sleep(pace); };
@@ -667,7 +667,7 @@ async function process(ticket, { store, engine, inject, signal, pace = 0, onUpda
   await stage("guardrails", "done", chk.flags.length ? chk.flags.map(f => f.replace(/_/g, " ")).join(" · ") : "clean");
 
   try {
-    await stage("triage", "running", engine === "live" ? "Claude is reading" : "reading");
+    await stage("triage", "running", engine === "live" ? "AI is reading" : "reading");
     const tri = await llm("triage", () => E.triage(clean, signal), vTriage); r.triage = tri;
     await stage("triage", "done", `${tri.intent.replace(/_/g, " ")}${tri.order_id ? " · " + tri.order_id : ""}`);
     if (tri.escalate) { await stage("triage", "routed", "→ human: " + (tri.escalate_reason || "requested").replace(/_/g, " ")); return escalate(tri.escalate_reason || "triage_requested"); }
@@ -692,7 +692,7 @@ async function process(ticket, { store, engine, inject, signal, pace = 0, onUpda
     let feedback = {}, plan = null;
     for (let attempt = 0; attempt <= MAX_REVISIONS; attempt++) {
       const n = attempt + 1;
-      await stage("resolver", "running", attempt ? "redrafting with feedback" : (engine === "live" ? "Claude is drafting" : "drafting"), n);
+      await stage("resolver", "running", attempt ? "redrafting with feedback" : (engine === "live" ? "AI is drafting" : "drafting"), n);
       plan = await llm("resolver", () => E.resolver(clean, tri, order, kb, name, ticket.customer_id, feedback, signal), vPlan);
       if (attempt === 0 && inject === "rogue" && plan.action && plan.action.type === "refund") { plan.action = { ...plan.action, params: { ...plan.action.params, amount: 999 } }; r.flags.push("rogue_amount_injected"); }
       if (attempt === 0 && inject === "promise" && !(plan.action && plan.action.type === "refund")) { plan.reply += " I've also issued a full refund for your trouble."; r.flags.push("false_promise_injected"); }
@@ -910,7 +910,7 @@ function setEngine(next) {
   $("eng-live").setAttribute("aria-pressed", String(next === "live"));
   note.classList.remove("err");
   note.textContent = next === "live"
-    ? "Claude (live): real Claude plays Triage and Resolver; the Policy Guard, QA Critic and Executor stay plain code. Each ticket takes about 10-40 seconds and uses your own Claude account; you'll be asked once."
+    ? "Live AI: a real model plays Triage and Resolver; the Policy Guard, QA Critic and Executor stay plain code. Each ticket takes about 10-40 seconds and uses your own account; you'll be asked once."
     : "Example engine: rule-based stand-ins for the AI agents, instant and free. The Policy Guard, QA Critic and Executor are the same code in both modes.";
   renderDetail();
 }
