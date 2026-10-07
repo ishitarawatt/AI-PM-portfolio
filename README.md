@@ -12,6 +12,7 @@ Two working multi-agent products, each with an AI PRD, agent architecture, eval 
 | **Key design call** | LLMs propose, code decides; > $100 goes to a human | Critic is code and blocks inflated claims; an AI reviewer only advises |
 | **Evals (offline)** | 19 cases, all gates pass | 13 cases, all gates pass |
 | **Unit tests** | 16 | 23 |
+| **Case study** | Not yet | [CASE_STUDY.md](job-copilot/CASE_STUDY.md) |
 
 ## The shared idea
 Both products follow the same pattern, which is the point of the portfolio:

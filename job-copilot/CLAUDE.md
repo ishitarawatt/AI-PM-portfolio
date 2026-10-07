@@ -23,5 +23,5 @@ Guardrails → Analyzer (LLM) → Tailor (LLM) ⇄ Critic (code) → Reviewer (L
 ## Next up
 1. Run `evals/run_evals.py --live` with a real API key and record results in README.
 2. Measure the Reviewer's precision on labeled pairs before considering letting it block.
-3. One-page case study.
+3. Keep `CASE_STUDY.md` numbers in sync with tests/evals.
 4. Add the cover letter to `demo/index.html` (port `check_cover_letter`).

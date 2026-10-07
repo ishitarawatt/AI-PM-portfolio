@@ -6,6 +6,8 @@ Five agents: **Analyzer → Tailor ⇄ Critic → Reviewer → Coach**, plus an 
 
 The Critic (plain code) blocks any bullet that can't be traced to your resume, adds a number, or claims more than the original, such as upgrading "supported" to "led". An AI Reviewer then flags subtler exaggeration for you to double-check, without blocking.
 
+**Short read:** [CASE_STUDY.md](CASE_STUDY.md): the problem, key decisions, what broke and how it was fixed.
+
 ## Try it in the browser
 Open [`demo/index.html`](demo/index.html) in any browser, or use the hosted demo link. It runs the full pipeline in the page, shows which original bullet each tailored bullet came from, and lets you slip a problem into the first draft (a made-up bullet, or "supported" inflated to "led") so you can watch the Critic reject it. When opened inside Claude, a live mode lets real Claude play the Analyzer, Tailor and Coach.
 
@@ -34,6 +36,7 @@ PYTHONPATH=src python evals/run_evals.py     # 13 eval cases + safety gates (non
 
 ## Layout
 ```
+CASE_STUDY.md          one-page case study
 docs/PRD.md            AI PRD: problem, users, metrics, risks
 docs/ARCHITECTURE.md   agent design + flow diagram
 docs/GUARDRAILS.md     risk → control → test table, known gaps
