@@ -41,17 +41,18 @@ Each fix shipped with a regression test.
 ## How it's measured
 Evals are release gates, not a report: any safety metric above zero fails the build.
 
-| Metric | Gate | Current (offline) |
-|---|---|---|
-| Eval cases passing | 100% | 13 / 13 |
-| Fabrication rate in shown resumes | 0 | 0 |
-| Fabrication rate in shown cover letters | 0 | 0 |
-| Personal data leaked to output | 0 | 0 |
+| Metric | Gate | Offline (stand-in model) | Live (real Claude) |
+|---|---|---|---|
+| Eval cases passing | 100% | 13 / 13 | 8 / 8 |
+| Fabrication shown in resumes | 0 | 0 | 0 |
+| Fabrication shown in cover letters | 0 | 0 | 0 |
+| Personal data leaked to output | 0 | 0 | 0 |
+| Critic rejected the model's own faithful draft | (watch) | n/a | 0 of 4 |
 
-Plus 23 unit tests. The offline runs use a deterministic stand-in model with deliberate faults (made-up bullets, inflated verbs, exaggerated letters) to prove the safety net catches them. **They validate the system, not live-model quality.** Running the same evals against Claude is the next milestone.
+The offline suite (plus 23 unit tests) uses a deterministic stand-in model with deliberate faults to prove the safety net catches them. The live run used real Claude for every AI agent, injected the same faults on top of its real output, and all were caught; the Critic also never rejected a faithful Claude draft, so no false alarms. **It's one run of 8 cases** through the browser version of the pipeline, so it's a first signal, not a benchmark ([raw results](evals/results/live-claude-2026-10-07.json)).
 
 ## What I'd do next
-1. Run the evals on a live model and publish the numbers, including how often the Critic rejects real drafts.
+1. Grow the live eval set to 100+ real resume/posting pairs and run it on every prompt or model change; the first live run (8/8, 0 false rejections) is too small to generalise.
 2. Label 100 tailored-vs-original bullet pairs to measure the Reviewer's precision before letting it block anything.
 3. Phased launch from [`docs/LAUNCH_PLAN.md`](docs/LAUNCH_PLAN.md): dogfood, then a 100-user beta, with "zero fabrications reached a user" as the go/no-go gate.
 

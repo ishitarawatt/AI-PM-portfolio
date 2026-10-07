@@ -21,7 +21,7 @@ Guardrails → Analyzer (LLM) → Tailor (LLM) ⇄ Critic (code) → Reviewer (L
 - Update the matching doc in `docs/` when behavior changes.
 
 ## Next up
-1. Run `evals/run_evals.py --live` with a real API key and record results in README.
+1. Live evals: first run done via the demo (8/8, all gates 0, see `evals/results/`). Still to do: Python `--live` suite and a larger labeled set.
 2. Measure the Reviewer's precision on labeled pairs before considering letting it block.
 3. Keep `CASE_STUDY.md` numbers in sync with tests/evals.
 4. Record live eval results from the demo's Evals panel ("Copy results") in README and CASE_STUDY.md.

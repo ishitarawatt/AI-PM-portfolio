@@ -12,7 +12,7 @@ Two working multi-agent products, each with an AI PRD, agent architecture, eval 
 | **Live demo** | [Open Support Desk](https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/) | [Open Job Application Copilot](https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/) |
 | **Hardest risk** | Moving money wrongly | Fabricated experience |
 | **Key design call** | LLMs propose, code decides; > $100 goes to a human | Critic is code and blocks inflated claims; an AI reviewer only advises |
-| **Evals (offline)** | 19 cases, all gates pass | 13 cases, all gates pass |
+| **Evals** | 19 offline cases, all gates pass | 13 offline cases + **8/8 on real Claude**, all gates pass |
 | **Unit tests** | 16 | 23 |
 | **Case study** | [CASE_STUDY.md](support-desk/CASE_STUDY.md) | [CASE_STUDY.md](job-copilot/CASE_STUDY.md) |
 
