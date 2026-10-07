@@ -9,7 +9,7 @@ The Critic (plain code) blocks any bullet that can't be traced to your resume, a
 **Short read:** [CASE_STUDY.md](CASE_STUDY.md): the problem, key decisions, what broke and how it was fixed.
 
 ## Try it in the browser
-Open [`demo/index.html`](demo/index.html) in any browser, or use the hosted demo link. It runs the full pipeline in the page, shows which original bullet each tailored bullet came from, and lets you slip a problem into the first draft (a made-up bullet, or "supported" inflated to "led") so you can watch the Critic reject it. When opened inside Claude, a live mode lets real Claude play the Analyzer, Tailor and Coach.
+Open [`demo/index.html`](demo/index.html) in any browser, or use the hosted demo link. It runs the full pipeline in the page, shows which original bullet each tailored bullet came from, and lets you slip a problem into the first draft (a made-up bullet, "supported" inflated to "led", or an exaggerated cover letter) so you can watch the checks reject it. An **Evals** panel runs 8 cases against the same safety gates; opened inside Claude, it can run them on real Claude with your own account, no API key needed, and copy the results. When opened inside Claude, a live mode lets real Claude play the Analyzer, Tailor and Coach.
 
 ## Quick start (no API key needed)
 ```bash

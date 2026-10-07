@@ -8,6 +8,11 @@ A multi-agent system that **resolves** routine customer support tickets end to e
 Triage (LLM) → Knowledge → Resolver (LLM) ⇄ Policy Guard + QA Critic → Executor | Approval queue | Human
 ```
 
+**Short read:** [CASE_STUDY.md](CASE_STUDY.md): the problem, key decisions, what broke and what was designed against.
+
+## Try it in the browser
+Open [`demo/index.html`](demo/index.html) in any browser. It processes the 11-ticket sample inbox, shows each ticket's journey through the agents, updates the order book as refunds and cancellations happen, and has an **approval queue** where you approve or reject refunds over $100, plus a full audit log. You can write your own tickets and slip in a rogue $999 refund or a false "I've refunded you" to watch the checks catch them. It's a JavaScript port of the same logic and matches the Python system ticket for ticket on the sample inbox. Opened inside Claude, a live mode lets real Claude play Triage and Resolver.
+
 ## Quick start (no API key)
 ```bash
 pip install -r requirements.txt
@@ -40,6 +45,8 @@ Offline results (mock model): 19/19 pass · wrong-action rate 0 · false-promise
 
 ## Layout
 ```
+CASE_STUDY.md  one-page case study
+demo/       browser demo (example + live engine)
 docs/       PRD · ARCHITECTURE · GUARDRAILS · MONITORING · LAUNCH_PLAN
 src/supportdesk/
   agents.py        Triage, Knowledge, Resolver

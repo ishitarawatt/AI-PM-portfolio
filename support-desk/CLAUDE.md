@@ -16,6 +16,8 @@ Input guardrails → Triage (LLM) → routing → Knowledge → Resolver (LLM) �
 - `data/`: sample orders/customers/help center/inbox; fixed today = 2026-10-07 (`SUPPORTDESK_TODAY`)
 - `evals/`: 19 cases + release gates (wrong action 0, false promise 0, PII 0, escalation recall 100%)
 - `docs/`: PRD, architecture, guardrails, monitoring, launch plan
+- `demo/index.html`: browser demo, a JS port of policy, guardrails, QA, executor and mock agents. Must stay in parity with Python on `data/inbox.json` (status + customer reply per ticket).
+- `CASE_STUDY.md`: keep its numbers in sync with tests/evals.
 
 ## Rules
 - Before and after any change: `python -m pytest -q` and `PYTHONPATH=src python evals/run_evals.py` must pass.
@@ -25,6 +27,6 @@ Input guardrails → Triage (LLM) → routing → Knowledge → Resolver (LLM) �
 
 ## Next up
 1. Live evals (`--live`) and record results in README.
-2. Browser demo like `job-copilot/demo/` (inbox view, approval queue, audit log).
+2. An Evals panel in the demo like `job-copilot/demo/` (live evals without an API key).
 3. Embedding-based retrieval + a retrieval eval.
 4. Multi-turn conversations (customer replies to `awaiting_customer`).
