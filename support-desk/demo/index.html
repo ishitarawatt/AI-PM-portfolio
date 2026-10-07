@@ -13,41 +13,29 @@
 /* Layout: a support operations console. Controls on top; inbox (left) beside the selected
    ticket's journey (right); then the ops view: dashboard, approval queue, order book, audit log. */
 :root {
-  --bg: #f2f4f3;
-  --panel: #ffffff;
-  --ink: #131a19;
-  --muted: #58625f;
-  --rule: #d6dcda;
-  --accent: #0d6b62;
-  --accent-ink: #ffffff;
-  --accent-bg: #e0f0ed;
-  --ok: #17704a;
-  --ok-bg: #e2f2e9;
-  --bad: #b1222b;
-  --bad-bg: #fbe4e5;
-  --warn: #855600;
-  --warn-bg: #fcefd2;
-  --info: #3346b8;
-  --info-bg: #e6e9fb;
-  --bubble: #eef3f2;
+  /* Dusty Blue + Lavender: 52667A 8FA6B8 C4D0D9 C3B6CF D8CEDD E5E1E6 69737D 303A43.
+     Status meaning is carried by the pill text and by tint (every tint is from this palette), not by red/green.
+     A deliberately single, light look: no dark-mode override, so the palette is never altered. */
+  --bg: #E5E1E6;
+  --panel: #C4D0D9;
+  --field: #E5E1E6;
+  --ink: #303A43;
+  --muted: color-mix(in srgb, #303A43 86%, #C4D0D9);
+  --rule: #8FA6B8;
+  --accent: #52667A;
+  --accent-ink: #E5E1E6;
+  --accent-bg: #D8CEDD;
+  --ok: #52667A;
+  --ok-bg: #E5E1E6;
+  --bad: #303A43;
+  --bad-bg: #303A43;
+  --warn: #303A43;
+  --warn-bg: #C3B6CF;
+  --info: #303A43;
+  --info-bg: #8FA6B8;
+  --bubble: #D8CEDD;
   --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0d1211; --panel: #151b1a; --ink: #e4ebe9; --muted: #95a29e; --rule: #29322f;
-    --accent: #4fc1b3; --accent-ink: #0d1211; --accent-bg: #133430;
-    --ok: #62d39b; --ok-bg: #12261c; --bad: #ff8088; --bad-bg: #2d1518; --warn: #f0c25a; --warn-bg: #2b2310;
-    --info: #8a9bff; --info-bg: #1a2040; --bubble: #1c2423;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0d1211; --panel: #151b1a; --ink: #e4ebe9; --muted: #95a29e; --rule: #29322f;
-  --accent: #4fc1b3; --accent-ink: #0d1211; --accent-bg: #133430;
-  --ok: #62d39b; --ok-bg: #12261c; --bad: #ff8088; --bad-bg: #2d1518; --warn: #f0c25a; --warn-bg: #2b2310;
-  --info: #8a9bff; --info-bg: #1a2040; --bubble: #1c2423;
-  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font: 14.5px/1.5 var(--f-ui); }
@@ -61,13 +49,13 @@ header .thesis { font-size: clamp(15.5px, 2vw, 17.5px); color: var(--muted); max
 header .thesis b { color: var(--ink); font-weight: 600; }
 
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); padding: 3px; gap: 3px; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; background: var(--field); padding: 3px; gap: 3px; }
 .seg button { border: 0; background: transparent; color: var(--muted); font: 500 13px/1 var(--f-ui); padding: 9px 12px; border-radius: 6px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .seg button:disabled { opacity: .45; cursor: not-allowed; }
 label.inline { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
 select, input[type="text"], textarea {
-  font: 13.5px/1.4 var(--f-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: 7px; padding: 8px 10px;
+  font: 13.5px/1.4 var(--f-ui); color: var(--ink); background: var(--field); border: 1px solid var(--rule); border-radius: 7px; padding: 8px 10px;
 }
 textarea { width: 100%; min-height: 90px; resize: vertical; font-family: var(--f-mono); font-size: 12.5px; }
 input[type="text"] { width: 100%; }
@@ -75,7 +63,7 @@ input[type="text"] { width: 100%; }
 .btn:disabled { opacity: .55; cursor: progress; }
 .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
 .btn.small { padding: 7px 11px; font-size: 12.5px; }
-.btn.danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); }
+.btn.danger { background: transparent; color: var(--bad); border: 1.5px solid var(--bad); }
 button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, .ticket:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .note { font-size: 12.5px; color: var(--muted); flex-basis: 100%; }
 .note.err { color: var(--bad); }
@@ -87,7 +75,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 
 .desk { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; align-items: start; }
 .inbox { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.ticket { display: grid; gap: 4px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); cursor: pointer; text-align: left; width: 100%; font: inherit; color: inherit; }
+.ticket { display: grid; gap: 4px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--field); cursor: pointer; text-align: left; width: 100%; font: inherit; color: inherit; }
 .ticket:hover { border-color: var(--accent); }
 .ticket[aria-current="true"] { border-color: var(--accent); background: var(--accent-bg); }
 .ticket .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
@@ -99,10 +87,10 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 .pill { font: 600 11.5px/1 var(--f-ui); padding: 5px 8px; border-radius: 999px; white-space: nowrap; }
 .pill.resolved { background: var(--ok-bg); color: var(--ok); }
 .pill.pending_approval { background: var(--info-bg); color: var(--info); }
-.pill.awaiting_customer { background: var(--accent-bg); color: var(--accent); }
+.pill.awaiting_customer { background: var(--accent-bg); color: var(--ink); }
 .pill.escalated { background: var(--warn-bg); color: var(--warn); }
-.pill.blocked, .pill.error { background: var(--bad-bg); color: var(--bad); }
-.pill.queued, .pill.stopped { background: var(--rule); color: var(--muted); }
+.pill.blocked, .pill.error { background: #303A43; color: #E5E1E6; }
+.pill.queued, .pill.stopped { background: var(--rule); color: var(--ink); }
 .pill.running { background: var(--info-bg); color: var(--info); }
 
 .compose { display: grid; gap: 8px; }
@@ -127,10 +115,10 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 .pipeline .state { font: 11px/1.3 var(--f-mono); color: var(--muted); overflow-wrap: anywhere; }
 .pipeline li::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; }
 .pipeline li[data-state="running"] { background: var(--info-bg); } .pipeline li[data-state="running"]::after { background: var(--info); }
-.pipeline li[data-state="done"]::after { background: var(--ok); } .pipeline li[data-state="done"] .state { color: var(--ok); }
+.pipeline li[data-state="done"]::after { background: var(--ok); } .pipeline li[data-state="done"] .state { color: var(--ink); }
 .pipeline li[data-state="rejected"]::after { background: var(--warn); } .pipeline li[data-state="rejected"] .state { color: var(--warn); }
 .pipeline li[data-state="failed"]::after { background: var(--bad); } .pipeline li[data-state="failed"] .state { color: var(--bad); }
-.pipeline li[data-state="routed"]::after { background: var(--accent); } .pipeline li[data-state="routed"] .state { color: var(--accent); }
+.pipeline li[data-state="routed"]::after { background: var(--accent); } .pipeline li[data-state="routed"] .state { color: var(--ink); }
 .pipeline li[data-state="skipped"] { opacity: .45; }
 .times { font: 500 10px/1 var(--f-mono); padding: 2px 4px; border-radius: 4px; background: var(--warn-bg); color: var(--warn); }
 .facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 13px; }
@@ -162,7 +150,7 @@ th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--rule
 th { font: 600 10.5px/1 var(--f-ui); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
 td.num, th.num { text-align: right; }
 tr.changed td { background: var(--accent-bg); }
-td .ok { color: var(--ok); } td .bad { color: var(--bad); } td .warn { color: var(--warn); } td .info { color: var(--info); }
+td .ok { color: var(--ink); font-weight: 600; } td .bad { color: var(--bad); font-weight: 700; } td .warn { color: var(--warn); } td .info { color: var(--info); }
 td.cell-text { white-space: normal; min-width: 200px; overflow-wrap: anywhere; }
 footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-width: 78ch; }
 
