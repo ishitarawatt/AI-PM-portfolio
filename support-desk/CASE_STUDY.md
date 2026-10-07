@@ -63,4 +63,4 @@ Auto-resolution is a target band, not something to maximize: pushing it higher u
 Agent design is mostly deciding **who is allowed to decide**. Language models are great at reading messy tickets and writing kind replies; they shouldn't be the last word on money. Putting the decision in code also made the system easy to test: every rule became a unit test, and every "what if the model does something weird" became an injected fault in the evals.
 
 ---
-Code, tests and evals: this folder · Browser demo: [`demo/index.html`](demo/index.html) · Full PRD: [`docs/PRD.md`](docs/PRD.md)
+**[Try the live demo](https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/)** · Code, tests and evals: this folder · Full PRD: [`docs/PRD.md`](docs/PRD.md)

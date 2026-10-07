@@ -59,4 +59,4 @@ Plus 23 unit tests. The offline runs use a deterministic stand-in model with del
 The interesting work wasn't the prompts. It was deciding **where the model is allowed to be creative and where it must be checked**, and building the checks so they fail loudly. Every bug above was a gap between "looks right" and "provably right", and evals with fault injection were what made those gaps visible.
 
 ---
-Code, tests and evals: this folder · Browser demo: [`demo/index.html`](demo/index.html) · Full PRD: [`docs/PRD.md`](docs/PRD.md)
+**[Try the live demo](https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/)** · Code, tests and evals: this folder · Full PRD: [`docs/PRD.md`](docs/PRD.md)

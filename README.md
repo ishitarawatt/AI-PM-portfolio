@@ -1,5 +1,7 @@
 # AI PM Portfolio: Multi-Agent Products
 
+**Live demos:** [Job Application Copilot](https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/) · [Support Desk](https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/)
+
 Two working multi-agent products, each with an AI PRD, agent architecture, eval suite with release gates, guardrails, monitoring, and a launch plan.
 
 | | [Support Desk](support-desk/) | [Job Application Copilot](job-copilot/) |
@@ -7,7 +9,7 @@ Two working multi-agent products, each with an AI PRD, agent architecture, eval 
 | **Problem** | Routine support tickets wait hours for a human to click a button | Tailoring a resume takes an hour; AI tools invent experience |
 | **Agents** | Triage · Knowledge · Resolver · Policy Guard · QA Critic · Executor | Analyzer · Tailor · Critic · Reviewer · Coach · Cover Letter |
 | **Takes real actions?** | Yes: refunds, cancellations, password resets | No: drafts only |
-| **Browser demo** | [`support-desk/demo/index.html`](support-desk/demo/index.html) | [`job-copilot/demo/index.html`](job-copilot/demo/index.html) (with live evals) |
+| **Live demo** | [Open Support Desk](https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/) | [Open Job Application Copilot](https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/) |
 | **Hardest risk** | Moving money wrongly | Fabricated experience |
 | **Key design call** | LLMs propose, code decides; > $100 goes to a human | Critic is code and blocks inflated claims; an AI reviewer only advises |
 | **Evals (offline)** | 19 cases, all gates pass | 13 cases, all gates pass |
@@ -24,7 +26,9 @@ Both products follow the same pattern, which is the point of the portfolio:
 5. **Observable by default.** Every agent step is traced; every action is audited.
 
 ## Try them
-Download the repo and open either `demo/index.html` in a browser: no install, no API key.
+No install, no account, no API key:
+- **Job Application Copilot:** https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/
+- **Support Desk:** https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/
 
 ## Run everything (no API key needed)
 ```bash
