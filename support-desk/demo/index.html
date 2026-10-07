@@ -12,36 +12,36 @@
 <style>
 /* Layout: a support operations console. Controls on top; inbox (left) beside the selected
    ticket's journey (right); then the ops view: dashboard, approval queue, order book, audit log. */
-/* Palette: Dusty Blue + Lavender. Lavender-grey page, lilac and mist-blue cards, muted-navy actions,
+/* Palette: Muted Ocean. Warm Pearl page, Cloud Grey and Mist Sage cards, Deep Ocean actions,
    charcoal-blue text. Semantic colours are muted to sit in the same soft tone. */
 :root {
-  --bg: #F4F1FF;          /* swatch: near-white lavender, page */
+  --bg: #EEEDE7;          /* Warm Pearl, page */
   --panel: #FFFFFF;       /* dense panels and tables stay readable */
-  --card: #D7C9F2;        /* swatch: lavender, tickets and tiles */
-  --card-2: #B9D6F2;      /* swatch: sky blue, replies and selected items */
-  --ink: #232A4A;         /* deepened #3F4A73 for text */
-  --muted: #3F4A73;       /* swatch: indigo */
-  --rule: #A3A0B8;        /* swatch: grey lavender, borders */
-  --accent: #3F4A73;      /* swatch: indigo, buttons and selection */
+  --card: #DCE1DE;        /* Cloud Grey, tickets and tiles */
+  --card-2: #B8C4BB;      /* Mist Sage, replies and selected items */
+  --ink: #1B3440;         /* deepened Deep Ocean for text */
+  --muted: #264653;       /* Deep Ocean */
+  --rule: #B8C4BB;        /* Mist Sage, borders */
+  --accent: #264653;      /* Deep Ocean, buttons and selection */
   --accent-ink: #FFFFFF;
-  --accent-bg: #B9D6F2;
-  --ok: #2F6B52;   --ok-bg: #D3EADD;
+  --accent-bg: #DCE1DE;
+  --ok: #52796F;   --ok-bg: #DCE1DE;
   --bad: #9A3B46;  --bad-bg: #F6DDE1;
   --warn: #7A5A1E; --warn-bg: #F3E6CC;
-  --info: #3F4A73; --info-bg: #B9D6F2;
-  --bubble: #F4F1FF;
+  --info: #264653; --info-bg: #B8C4BB;
+  --bubble: #EEEDE7;
   --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-doc: "Source Serif 4", Georgia, "Times New Roman", serif;
-  --nav-bg: #3F4A73; --nav-ink: #FFFFFF; --nav-chip: #B9D6F2;
-  --shadow: 0 1px 2px rgba(35,42,74,.06), 0 12px 32px rgba(35,42,74,.08);
+  --nav-bg: #264653; --nav-ink: #EEEDE7; --nav-chip: #84A98C;
+  --shadow: 0 1px 2px rgba(27,52,64,.06), 0 12px 32px rgba(27,52,64,.08);
   --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 :root[data-theme="dark"] {
-  --bg: #1C2036; --panel: #262B47; --card: #323861; --card-2: #3F4A73; --ink: #F4F1FF; --muted: #B9D6F2; --rule: #4F5580;
-  --accent: #B9D6F2; --accent-ink: #1C2036; --accent-bg: #3F4A73;
-  --ok: #93C7AA; --ok-bg: #2E4339; --bad: #E7A6AF; --bad-bg: #4A2F35; --warn: #E3C58A; --warn-bg: #463B27;
-  --info: #D7C9F2; --info-bg: #3A3F6B; --bubble: #323861;
-  --nav-bg: #262B47; --nav-ink: #F4F1FF; --nav-chip: #B9D6F2; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.3);
+  --bg: #14262E; --panel: #1B3440; --card: #264653; --card-2: #3A5F5F; --ink: #EEEDE7; --muted: #B8C4BB; --rule: #3B5F63;
+  --accent: #84A98C; --accent-ink: #14262E; --accent-bg: #264653;
+  --ok: #84A98C; --ok-bg: #264653; --bad: #E7A6AF; --bad-bg: #4A2F35; --warn: #E3C58A; --warn-bg: #463B27;
+  --info: #B8C4BB; --info-bg: #264653; --bubble: #264653;
+  --nav-bg: #1B3440; --nav-ink: #EEEDE7; --nav-chip: #84A98C; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.3);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -255,15 +255,15 @@ select, input[type="text"], textarea { border-radius: 12px; }
   @keyframes sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 }
 
-/* moving colour behind the top of the page: sky #B9D6F2, lavender #D7C9F2 and grey-lavender #A3A0B8 drift and blend slowly */
+/* moving colour behind the top of the page: eucalyptus #84A98C, mist sage #B8C4BB and muted teal #52796F drift and blend slowly */
 .aurora { position: absolute; inset: 0 0 auto 0; height: 760px; z-index: 0; overflow: hidden; pointer-events: none;
-  background: linear-gradient(115deg, #B9D6F2, #D7C9F2, #A3A0B8, #B9D6F2); background-size: 300% 100%; opacity: .9;
+  background: linear-gradient(115deg, #84A98C, #B8C4BB, #52796F, #84A98C); background-size: 300% 100%; opacity: .9;
   -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent); }
 .aurora::after { content: ""; position: absolute; inset: 0; background: var(--bg); opacity: .6; }
 .aurora i { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .7; z-index: 1; }
-.aurora i:nth-child(1) { width: 520px; height: 520px; left: -8%; top: -12%; background: #B9D6F2; }
-.aurora i:nth-child(2) { width: 480px; height: 480px; right: -6%; top: 2%; background: #D7C9F2; }
-.aurora i:nth-child(3) { width: 540px; height: 540px; left: 30%; top: 18%; background: #A3A0B8; }
+.aurora i:nth-child(1) { width: 520px; height: 520px; left: -8%; top: -12%; background: #84A98C; }
+.aurora i:nth-child(2) { width: 480px; height: 480px; right: -6%; top: 2%; background: #B8C4BB; }
+.aurora i:nth-child(3) { width: 540px; height: 540px; left: 30%; top: 18%; background: #52796F; }
 @media (prefers-reduced-motion: no-preference) {
   @keyframes drift1 { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(22vw, 16%) scale(1.15); } 100% { transform: translate(0, 0) scale(1); } }
   @keyframes drift2 { 0% { transform: translate(0, 0) scale(1.1); } 50% { transform: translate(-24vw, 20%) scale(.9); } 100% { transform: translate(0, 0) scale(1.1); } }
