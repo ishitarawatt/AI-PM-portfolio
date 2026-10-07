@@ -44,6 +44,9 @@ class CopilotResult:
     # Advisory notes from the AI reviewer: [{"bullet": ..., "original": ..., "reason": ...}].
     # They never block a result; the user is asked to double-check these bullets.
     review_notes: list[dict[str, str]] = field(default_factory=list)
+    # Optional cover letter. None when not requested or when withheld for failing its checks.
+    cover_letter: str | None = None
+    cover_letter_issues: list[str] = field(default_factory=list)
     flags: list[str] = field(default_factory=list)
     trace_id: str = ""
 

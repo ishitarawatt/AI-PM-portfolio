@@ -1,11 +1,11 @@
 """Orchestrator: guardrails -> analyze -> tailor <-> critic (bounded loop) -> AI reviewer (advisory)
--> coach. Escalates to a human on failure."""
+-> coach -> optional cover letter <-> letter checker (bounded loop). Escalates to a human on failure."""
 from __future__ import annotations
 
 import json
 
-from .agents import Analyzer, Coach, Critic, Judge, Tailor
-from .guardrails import best_source, check_job_description, redact_pii
+from .agents import Analyzer, Coach, CoverLetterWriter, Critic, Judge, Tailor
+from .guardrails import best_source, check_cover_letter, check_job_description, redact_pii
 from .llm import LLMClient
 from .monitoring import Tracer, approx_tokens
 from .schemas import CopilotResult
@@ -35,6 +35,7 @@ class Orchestrator:
     def __init__(self, llm: LLMClient, tracer: Tracer | None = None):
         self.analyzer, self.tailor = Analyzer(llm), Tailor(llm)
         self.coach, self.critic, self.judge = Coach(llm), Critic(), Judge(llm)
+        self.letter_writer = CoverLetterWriter(llm)
         self.tracer = tracer or Tracer(None)
 
     def _call(self, trace_id: str, name: str, fn, input_text: str):
@@ -52,7 +53,7 @@ class Orchestrator:
                 last = e
         raise RuntimeError(f"{name} failed after {MAX_AGENT_RETRIES + 1} attempts: {last}")
 
-    def run(self, resume_text: str, job_description: str) -> CopilotResult:
+    def run(self, resume_text: str, job_description: str, cover_letter: bool = False) -> CopilotResult:
         trace_id = self.tracer.new_trace_id()
         result = CopilotResult(status="ok", trace_id=trace_id)
 
@@ -112,7 +113,31 @@ class Orchestrator:
             # 5. Interview prep (runs after approval so gap list is trustworthy)
             result.prep = self._call(trace_id, "coach",
                                      lambda: self.coach.run(analysis, tailored.gaps), json.dumps(analysis.__dict__))
+
+            # 6. Optional cover letter, checked like the resume. Built only from APPROVED bullets.
+            #    If it can't pass its checks it is withheld; the verified resume still stands.
+            if cover_letter:
+                self._cover_letter(trace_id, result, analysis, resume, tailored)
         except RuntimeError as e:
             result.status = "needs_human"
             result.flags.append(f"agent_failure: {e}")
         return result
+
+    def _cover_letter(self, trace_id, result, analysis, resume, tailored) -> None:
+        feedback: list[str] | None = None
+        try:
+            for loop in range(MAX_CRITIC_LOOPS + 1):
+                letter = self._call(trace_id, "letter",
+                                    lambda: self.letter_writer.run(analysis, resume, tailored, feedback),
+                                    json.dumps(tailored.bullets))
+                with self.tracer.span(trace_id, "letter_check"):
+                    issues = check_cover_letter(letter, resume, tailored.gaps)
+                result.cover_letter_issues = issues
+                if not issues:
+                    result.cover_letter = letter
+                    return
+                feedback = issues
+                result.flags.append(f"letter_rejected_loop_{loop}")
+            result.flags.append("cover_letter_withheld")      # fail closed for the letter only
+        except RuntimeError:
+            result.flags.append("cover_letter_unavailable")

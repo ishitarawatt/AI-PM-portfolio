@@ -125,5 +125,47 @@
       "status": "needs_human",
       "resume_withheld": true
     }
+  },
+  {
+    "id": "cover_letter_happy_path",
+    "resume": "Priya Sharma\npriya@example.com | +91 98765 43210\nProduct manager with 5 years shipping data products.\nSkills: Python, SQL, product management, data analysis\n- Owned roadmapping for an analytics product used by 120 enterprise customers\n- Supported the launch of a self-serve billing portal used by 3,000 customers\n- Wrote SQL and Python scripts for data analysis that cut reporting time by 30%\n",
+    "job": "Senior Product Manager, Billing\nRequirements: SQL, python, product management, roadmapping, kubernetes.",
+    "cover_letter": true,
+    "expect": {
+      "status": "ok",
+      "letter": "ok"
+    }
+  },
+  {
+    "id": "cover_letter_exaggeration_fixed",
+    "resume": "Priya Sharma\npriya@example.com | +91 98765 43210\nProduct manager with 5 years shipping data products.\nSkills: Python, SQL, product management, data analysis\n- Owned roadmapping for an analytics product used by 120 enterprise customers\n- Supported the launch of a self-serve billing portal used by 3,000 customers\n- Wrote SQL and Python scripts for data analysis that cut reporting time by 30%\n",
+    "job": "Senior Product Manager, Billing\nRequirements: SQL, python, product management, roadmapping, kubernetes.",
+    "cover_letter": true,
+    "llm": {
+      "letter_inflate_first_n": 1
+    },
+    "expect": {
+      "status": "ok",
+      "letter": "ok",
+      "flags_include": [
+        "letter_rejected_loop_0"
+      ]
+    }
+  },
+  {
+    "id": "cover_letter_persistent_exaggeration_withheld",
+    "resume": "Priya Sharma\npriya@example.com | +91 98765 43210\nProduct manager with 5 years shipping data products.\nSkills: Python, SQL, product management, data analysis\n- Owned roadmapping for an analytics product used by 120 enterprise customers\n- Supported the launch of a self-serve billing portal used by 3,000 customers\n- Wrote SQL and Python scripts for data analysis that cut reporting time by 30%\n",
+    "job": "Senior Product Manager, Billing\nRequirements: SQL, python, product management, roadmapping, kubernetes.",
+    "cover_letter": true,
+    "llm": {
+      "letter_inflate_first_n": 5
+    },
+    "expect": {
+      "status": "ok",
+      "letter": "withheld",
+      "flags_include": [
+        "cover_letter_withheld"
+      ]
+    }
   }
 ]

@@ -112,6 +112,38 @@ class Judge:
         return notes
 
 
+LETTER_SYSTEM = (
+    "You write a short cover letter (3 paragraphs, under 220 words) for the role. HARD RULES: every "
+    "claim must come from the APPROVED RESUME BULLETS or summary; reuse their wording for any achievement; "
+    "never add numbers, team sizes, employers or results that aren't there; use 'led', 'owned' or "
+    "'managed' only for bullets that already say so; for each GAP skill either leave it out or say "
+    "honestly that you are eager to learn it. No words like 'single-handedly' or 'world-class'. "
+    "End with 'Sincerely,' and the placeholder '[Your name]'. "
+    "If CHECKER FEEDBACK is present, fix every point. Output: {\"letter\": string}. " + JSON_ONLY
+)
+
+
+class CoverLetterWriter:
+    role = "letter"
+
+    def __init__(self, llm: LLMClient):
+        self.llm = llm
+
+    def run(self, analysis: JobAnalysis, resume: dict, tailored: TailoredResume,
+            feedback: list[str] | None = None) -> str:
+        payload = {"role": {"title": analysis.title, "seniority": analysis.seniority,
+                            "responsibilities": analysis.key_responsibilities},
+                   "approved_resume": {"summary": resume.get("summary", ""), "bullets": tailored.bullets},
+                   "matched_skills": tailored.matched_skills, "gaps": tailored.gaps}
+        if feedback:
+            payload["checker_feedback"] = feedback
+        d = extract_json(self.llm.complete(self.role, LETTER_SYSTEM, json.dumps(payload)))
+        letter = d["letter"]
+        if not isinstance(letter, str) or not letter.strip():
+            raise ValueError("empty letter")
+        return letter.strip()
+
+
 class Critic:
     """Reviewer agent. Deliberately deterministic: a model grading its own fabrications is weak evidence."""
 

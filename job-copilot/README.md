@@ -2,7 +2,7 @@
 
 A multi-agent product that tailors your resume to a job posting **without inventing experience**, reports your honest skill gaps, and prepares you for the interview.
 
-Five agents: **Analyzer → Tailor ⇄ Critic → Reviewer → Coach**, wrapped in deterministic guardrails, full tracing, and an eval suite with CI-style gates.
+Five agents: **Analyzer → Tailor ⇄ Critic → Reviewer → Coach**, plus an optional **Cover Letter** writer with its own checker, wrapped in deterministic guardrails, full tracing, and an eval suite with CI-style gates.
 
 The Critic (plain code) blocks any bullet that can't be traced to your resume, adds a number, or claims more than the original, such as upgrading "supported" to "led". An AI Reviewer then flags subtler exaggeration for you to double-check, without blocking.
 
@@ -13,7 +13,10 @@ Open [`demo/index.html`](demo/index.html) in any browser, or use the hosted demo
 ```bash
 pip install -r requirements.txt          # pytest (+ anthropic for live mode)
 PYTHONPATH=src python -m copilot.cli --resume examples/resume.txt --job examples/job.txt
+PYTHONPATH=src python -m copilot.cli --resume examples/resume.txt --job examples/job.txt --cover-letter   # also write a checked cover letter
 ```
+
+The cover letter is built only from bullets the Critic approved. A checker then confirms every number comes from your resume, "led"/"owned" only appear where your matching bullet says so, there are no boosters like "single-handedly", and skill gaps are never claimed as experience. If it still fails after one rewrite it is withheld, and your verified resume is still returned.
 
 ## Live mode (real Claude)
 ```bash
@@ -23,8 +26,8 @@ PYTHONPATH=src python -m copilot.cli --resume examples/resume.txt --job examples
 
 ## Verify
 ```bash
-python -m pytest -q                          # 19 unit tests
-PYTHONPATH=src python evals/run_evals.py     # 10 eval cases + safety gates (non-zero exit on failure)
+python -m pytest -q                          # 23 unit tests
+PYTHONPATH=src python evals/run_evals.py     # 13 eval cases + safety gates (non-zero exit on failure)
 ```
 
 > The offline runs use a deterministic **mock model** so the harness, guardrails and failure paths are testable and free. They validate the system, **not live-model quality**. Run `evals/run_evals.py --live` before trusting results.

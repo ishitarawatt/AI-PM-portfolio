@@ -72,10 +72,12 @@ class MockClient:
                          (keeps >= 80% word overlap, so only the claim-strength rule catches it)
     """
 
-    def __init__(self, fabricate_first_n: int = 0, embellish_first_n: int = 0):
+    def __init__(self, fabricate_first_n: int = 0, embellish_first_n: int = 0, letter_inflate_first_n: int = 0):
         self.fabricate_first_n = fabricate_first_n
         self.embellish_first_n = embellish_first_n
+        self.letter_inflate_first_n = letter_inflate_first_n   # letter writer exaggerates on its first N calls
         self.tailor_calls = 0
+        self.letter_calls = 0
 
     def complete(self, role: str, system: str, user: str) -> str:
         payload = json.loads(user)
@@ -135,6 +137,28 @@ class MockClient:
                              "reason": f"Adds wording not in the original: {', '.join(added)}" if added
                                        else "Same claim as the original."})
         return {"verdicts": verdicts}
+
+    def _letter(self, p: dict) -> dict:
+        """Stand-in writer: builds the letter from approved bullets, reused verbatim."""
+        self.letter_calls += 1
+        role, res, gaps = p["role"], p["approved_resume"], p["gaps"]
+        def clause(b: str) -> str:
+            return b[0].lower() + b[1:].rstrip(".")
+        bullets = res["bullets"][:2]
+        body = f"In my recent work I {clause(bullets[0])}."
+        if len(bullets) > 1:
+            body += f" I also {clause(bullets[1])}."
+        paras = [f"Dear Hiring Manager,",
+                 f"I'm applying for the {role['title']} role. {res['summary']}".strip(),
+                 body]
+        if gaps:
+            paras.append(f"I'm honest that {' and '.join(gaps[:2])} {'is' if len(gaps[:2]) == 1 else 'are'} newer to me, "
+                         "and I'm eager to ramp up quickly.")
+        if self.letter_calls <= self.letter_inflate_first_n:
+            paras.insert(3, "I single-handedly led a team of 15 engineers to rebuild the platform."
+                            + (f" I also have deep hands-on experience with {gaps[0]}." if gaps else ""))
+        paras.append("Thank you for your time.\n\nSincerely,\n[Your name]")
+        return {"letter": "\n\n".join(paras)}
 
     def _coach(self, p: dict) -> dict:
         analysis, gaps = p["analysis"], p["gaps"]

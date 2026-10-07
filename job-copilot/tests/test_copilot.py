@@ -151,3 +151,46 @@ def test_claim_reads_opening_verb_not_nouns():
     assert issues and "'supported' (a supporting role)" in issues[0]          # not 'launch'
     sneaky = check_fabrication(["Supported and led the launch of a self-serve billing portal used by 3,000 customers"], [], src, [])
     assert sneaky and "Inflates ownership" in sneaky[0]
+
+
+# ----------------------------------------------------------------- cover letter
+from copilot.guardrails import check_cover_letter
+
+LETTER_RESUME = {"summary": "Product manager with 5 years shipping data products.", "skills": ["SQL"],
+                 "bullets": ["Owned roadmapping for an analytics product used by 120 enterprise customers",
+                             "Supported the launch of a self-serve billing portal used by 3,000 customers"]}
+
+
+def test_letter_checker_accepts_faithful_letter():
+    ok = ("In my recent work I owned roadmapping for an analytics product used by 120 enterprise customers. "
+          "I also supported the launch of a self-serve billing portal used by 3,000 customers. "
+          "Kubernetes is newer to me, and I'm eager to learn it.")
+    assert check_cover_letter(ok, LETTER_RESUME, ["kubernetes"]) == []
+
+
+def test_letter_checker_catches_each_kind_of_overclaim():
+    r, gaps = LETTER_RESUME, ["kubernetes"]
+    assert "numbers" in check_cover_letter("I grew revenue by 40%.", r, gaps)[0]
+    upgraded = check_cover_letter("I led the launch of a self-serve billing portal used by 3,000 customers.", r, gaps)
+    assert upgraded and "matching resume bullet says 'supported'" in upgraded[0]   # not fooled by shared words
+    assert "no matching bullet" in check_cover_letter("I led a team of designers through a rebrand.", r, gaps)[0]
+    assert "inflating" in check_cover_letter("I single-handedly improved our onboarding.", r, gaps)[0]
+    assert "kubernetes" in check_cover_letter("I have deep kubernetes experience.", r, gaps)[0]
+
+
+def test_cover_letter_is_opt_in_and_checked():
+    off = Orchestrator(MockClient(), Tracer(None)).run(RESUME, JOB)
+    assert off.cover_letter is None and "cover_letter_withheld" not in off.flags
+    on = Orchestrator(MockClient(), Tracer(None)).run(RESUME, JOB, cover_letter=True)
+    assert on.cover_letter and check_cover_letter(on.cover_letter, parse_resume(RESUME), on.resume.gaps) == []
+    assert "[Your name]" in on.cover_letter and "asha@example.com" not in on.cover_letter
+
+
+def test_exaggerated_letter_fixed_or_withheld_but_resume_stands():
+    fixed = Orchestrator(MockClient(letter_inflate_first_n=1), Tracer(None)).run(RESUME, JOB, cover_letter=True)
+    assert fixed.cover_letter and "single-handedly" not in fixed.cover_letter
+    assert "letter_rejected_loop_0" in fixed.flags
+    held = Orchestrator(MockClient(letter_inflate_first_n=9), Tracer(None)).run(RESUME, JOB, cover_letter=True)
+    assert held.cover_letter is None and "cover_letter_withheld" in held.flags
+    assert held.status == "ok" and held.resume is not None        # the verified resume is still returned
+    assert held.cover_letter_issues

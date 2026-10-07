@@ -156,3 +156,59 @@ def check_fabrication(out_bullets: list[str], matched_skills: list[str],
         if s.lower() not in blob:
             issues.append(f"Claimed skill with no evidence in resume: {s!r}")
     return issues
+
+
+# --------------------------------------------------------------------------- cover letter checks
+# Prose can't be traced line by line like bullets, so the letter is checked for the claims that
+# matter: numbers, leadership, scope words, and skills the candidate doesn't have.
+LETTER_INTENSIFIERS = {
+    "single-handedly", "singlehandedly", "solely", "company-wide", "organization-wide",
+    "organisation-wide", "org-wide", "world-class", "award-winning", "record-breaking",
+    "industry-leading", "unprecedented", "first-ever",
+}
+HONESTY_MARKERS = ("learning", "learn", "eager", "ramp up", "ramping up", "new to", "newer",
+                   "building my", "growing", "keen to", "excited to develop", "not yet", "haven't")
+_STOP = {"the", "and", "for", "with", "that", "this", "from", "into", "over", "your", "have", "been",
+         "role", "team", "work", "worked", "which", "where", "while", "their", "about", "also"}
+_SENT_RE = re.compile(r"(?<=[.!?])\s+|\n+")
+
+
+def _content(words) -> set[str]:
+    return {w for w in words if len(w) > 3 and w not in _STOP and w not in VERB_TIERS}
+
+
+def check_cover_letter(letter: str, resume: dict, gaps: list[str]) -> list[str]:
+    """Return issues with a cover letter. Empty list means every claim is backed by the resume."""
+    issues: list[str] = []
+    if not letter.strip():
+        return ["Cover letter is empty."]
+    source_text = " ".join(resume["bullets"] + [resume.get("summary", "")] + resume.get("skills", []))
+
+    new_numbers = sorted(_numbers(letter) - _numbers(source_text))
+    if new_numbers:
+        issues.append(f"Uses numbers that aren't in the resume: {', '.join(new_numbers)}")
+
+    bullets = []   # (content words, opening-verb tier, opening verb) per resume bullet
+    for b in resume["bullets"]:
+        bw = _WORD_RE.findall(b.lower())
+        bullets.append((_content(bw), VERB_TIERS.get(bw[0], 0) if bw else 0, bw[0] if bw else ""))
+
+    for sentence in (s.strip() for s in _SENT_RE.split(letter) if s.strip()):
+        sw = _WORD_RE.findall(sentence.lower())
+        low = sentence.lower()
+        lead_verbs = [w for w in sw if VERB_TIERS.get(w) == 3]
+        if lead_verbs:
+            # Which bullet is this sentence describing? The one sharing the most content words.
+            sc = _content(sw)
+            best = max(bullets, key=lambda b: len(sc & b[0]), default=(set(), 0, ""))
+            if len(sc & best[0]) < 2:
+                issues.append(f"Claims leadership ('{lead_verbs[0]}') with no matching bullet in the resume: {sentence!r}")
+            elif best[1] < 3:
+                issues.append(f"Says '{lead_verbs[0]}' but the matching resume bullet says '{best[2]}': {sentence!r}")
+        added = sorted(set(sw) & LETTER_INTENSIFIERS)
+        if added:
+            issues.append(f"Uses inflating words ({', '.join(added)}): {sentence!r}")
+        for gap in gaps:
+            if re.search(rf"(?<![a-z]){re.escape(gap.lower())}(?![a-z])", low) and not any(m in low for m in HONESTY_MARKERS):
+                issues.append(f"Implies experience with '{gap}', which the resume doesn't show: {sentence!r}")
+    return issues

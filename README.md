@@ -5,13 +5,13 @@ Two working multi-agent products, each with an AI PRD, agent architecture, eval 
 | | [Support Desk](support-desk/) | [Job Application Copilot](job-copilot/) |
 |---|---|---|
 | **Problem** | Routine support tickets wait hours for a human to click a button | Tailoring a resume takes an hour; AI tools invent experience |
-| **Agents** | Triage · Knowledge · Resolver · Policy Guard · QA Critic · Executor | Analyzer · Tailor · Critic · Reviewer · Coach |
+| **Agents** | Triage · Knowledge · Resolver · Policy Guard · QA Critic · Executor | Analyzer · Tailor · Critic · Reviewer · Coach · Cover Letter |
 | **Takes real actions?** | Yes: refunds, cancellations, password resets | No: drafts only |
 | **Browser demo** | Not yet | `job-copilot/demo/index.html` |
 | **Hardest risk** | Moving money wrongly | Fabricated experience |
 | **Key design call** | LLMs propose, code decides; > $100 goes to a human | Critic is code and blocks inflated claims; an AI reviewer only advises |
-| **Evals (offline)** | 19 cases, all gates pass | 10 cases, all gates pass |
-| **Unit tests** | 16 | 19 |
+| **Evals (offline)** | 19 cases, all gates pass | 13 cases, all gates pass |
+| **Unit tests** | 16 | 23 |
 
 ## The shared idea
 Both products follow the same pattern, which is the point of the portfolio:

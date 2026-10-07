@@ -28,6 +28,11 @@ resume + job description
  ┌──────────────────────┐
  │ Coach (LLM)          │  analysis + verified gaps → questions, honest gap talking points
  └─────────┬────────────┘
+           ▼  (optional, --cover-letter)
+ ┌──────────────────────┐        ┌────────────────────────┐
+ │ Cover Letter (LLM)   │◀──────▶│ Letter checker (code)  │  max 1 rewrite; still failing → letter withheld,
+ │ approved bullets only│ issues │ numbers·leads·gaps     │  resume result unaffected
+ └─────────┬────────────┘        └────────────────────────┘
            ▼
      CopilotResult  (every step traced to logs/traces.jsonl)
 ```
@@ -40,6 +45,7 @@ resume + job description
 | Critic | Code | source resume + tailored output | `CriticReport` | rejects → tailor loop (max 1) → escalate |
 | Reviewer | LLM (advisory) | (original, tailored) bullet pairs | review notes | failure tolerated, never blocks |
 | Coach | LLM | analysis + verified gaps | `InterviewPrep` | same retry policy |
+| Cover Letter | LLM (optional) | role + approved bullets + gaps | letter text | checker loop (max 1) → withheld; never affects resume status |
 
 ## Key design decisions
 1. **Critic is not an LLM.** Verification by the same class of system that fabricates is weak. A deterministic check is auditable, free, and cannot be sweet-talked.
