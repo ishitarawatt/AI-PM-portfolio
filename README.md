@@ -1,5 +1,7 @@
 # AI PM Portfolio: Multi-Agent Products
 
+**Portfolio site:** [ishitarawatt.github.io/AI-PM-portfolio](https://ishitarawatt.github.io/AI-PM-portfolio/) (case studies, PRD scorecards and eval data for both products)
+
 **Live demos:** [Job Application Copilot](https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/) · [Support Desk](https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/)
 
 Two working multi-agent products, each with an AI PRD, agent architecture, eval suite with release gates, guardrails, monitoring, and a launch plan.

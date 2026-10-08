@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Ishita Rawat, AI product manager. Case studies for Job Application Copilot, Support Desk and AgnaSight, with verified eval data, PRD scorecards and live demos.">
+<meta property="og:title" content="Ishita Rawat · AI Product Manager">
+<meta property="og:description" content="Two multi-agent AI products with PRDs, eval gates and guardrails. 78 eval cases passing, 0 safety failures.">
+<meta property="og:type" content="website">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Ishita Rawat · AI Product Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a single reading column of case studies, each drawn as a workflow schematic (before → after), with AI / Human / Rule tags on every step */
+:root {
+  color-scheme: light;
+  --paper: #FFFFFF;
+  --surface: #F7FBFA;
+  --ink: #253B3A;
+  --muted: #527E7A;
+  --line: #D7ECE8;
+  --accent: #527E7A;
+  --accent-soft: #D7ECE8;
+  --human: #253B3A;
+  --human-soft: #EAF5F2;
+  --rule: #253B3A;
+  --rule-soft: #BBDDD7;
+  --code-bg: #253B3A;
+  --code-fg: #F7FBFA;
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 0 64px; }
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.12; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.label {
+  font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.ph { color: var(--accent); }
+
+/* Hero */
+.hero { padding-block: 56px 40px; display: grid; gap: 28px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-size: clamp(2.6rem, 8vw, 5rem); font-weight: 800; letter-spacing: -.02em; }
+.hero .lede { font-size: clamp(1.15rem, 2.4vw, 1.4rem); max-width: 40ch; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 28px; font-family: var(--font-mono); font-size: .85rem; color: var(--muted); }
+.hero-meta span b { color: var(--ink); font-weight: 600; }
+
+/* Nav */
+.jump {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.jump .wrap { padding-block: 10px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.jump a {
+  flex: none; font-family: var(--font-display); font-weight: 500; font-size: .9rem;
+  text-decoration: none; color: var(--ink); padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface);
+}
+.jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+section { padding-block: 56px 0; }
+.sec-head { display: grid; gap: 10px; margin-bottom: 28px; }
+.sec-head h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 700; }
+.sec-head p { color: var(--muted); max-width: 62ch; }
+
+/* Method */
+.method { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.method li { background: var(--surface); padding: 18px; display: grid; gap: 6px; align-content: start; }
+.method .n { font-family: var(--font-mono); color: var(--accent); font-size: .8rem; }
+.method h3 { font-size: 1.05rem; font-weight: 700; }
+.method p { font-size: .93rem; color: var(--muted); line-height: 1.5; }
+
+/* Index */
+.index { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.index a {
+  display: grid; gap: 10px; padding: 20px; text-decoration: none; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+  transition: border-color .15s, transform .15s;
+}
+.index a:hover { border-color: var(--accent); transform: translateY(-2px); }
+.index h3 { font-size: 1.25rem; font-weight: 700; }
+.index p { font-size: .95rem; color: var(--muted); }
+.index .stat { font-family: var(--font-mono); font-size: .85rem; color: var(--accent); }
+
+/* Case study */
+.case { border-top: 3px solid var(--ink); margin-top: 72px; padding-top: 28px; }
+.case-head { display: grid; gap: 14px; margin-bottom: 32px; }
+.case-head h2 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; letter-spacing: -.015em; }
+.case-head .summary { font-size: 1.15rem; max-width: 60ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.facts span { font-family: var(--font-mono); font-size: .78rem; padding: 4px 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); background: var(--surface); }
+.note { font-size: .92rem; color: var(--muted); font-style: italic; max-width: 62ch; }
+
+.block { display: grid; gap: 14px; margin-top: 40px; }
+.block > h3 { font-size: 1.35rem; font-weight: 700; }
+.block > p { max-width: 65ch; }
+
+/* Flow */
+.flows { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.flow-col { min-width: 0; display: grid; gap: 10px; align-content: start; }
+.flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: step; }
+.flow li {
+  display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
+  padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+  font-size: .95rem; line-height: 1.5;
+}
+.flow li b { font-family: var(--font-display); font-weight: 700; display: block; font-size: 1rem; }
+.flow li > div { min-width: 0; }
+.flow.before li { background: transparent; border-style: dashed; color: var(--muted); }
+.flow.before li b { color: var(--ink); }
+.tag {
+  font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .06em;
+  padding: 3px 7px; border-radius: 3px; text-transform: uppercase; white-space: nowrap; margin-top: 2px;
+}
+.tag.ai { background: var(--accent-soft); color: var(--accent); }
+.tag.human { background: var(--human-soft); color: var(--human); }
+.tag.rule { background: var(--rule-soft); color: var(--rule); }
+.tag.manual { border: 1px solid var(--line); color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .85rem; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+
+/* Tables */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 520px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: .88rem; white-space: nowrap; }
+td.num.after { color: var(--accent); font-weight: 600; }
+
+.math {
+  font-family: var(--font-mono); font-size: .88rem; line-height: 1.7; padding: 14px 16px;
+  border-left: 3px solid var(--accent); background: var(--surface); overflow-x: auto;
+}
+
+/* Triggers */
+.triggers { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.triggers li { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 14px; background: var(--human-soft); border-radius: 6px; font-size: .95rem; line-height: 1.45; }
+.triggers .arrow { font-family: var(--font-mono); color: var(--human); font-weight: 600; }
+.triggers .then { color: var(--human); font-weight: 600; }
+
+/* Prompt */
+.prompt { background: var(--code-bg); color: var(--code-fg); border-radius: 8px; overflow: hidden; }
+.prompt-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid #527E7A; gap: 12px; }
+.prompt-bar .label { color: #BFC5BE; }
+.copy {
+  font-family: var(--font-mono); font-size: .75rem; color: var(--code-fg); background: transparent;
+  border: 1px solid #527E7A; border-radius: 4px; padding: 5px 10px; cursor: pointer;
+}
+.copy:hover { border-color: #BBDDD7; }
+.prompt pre { margin: 0; padding: 16px; overflow-x: auto; font-family: var(--font-mono); font-size: .82rem; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.prompt .k { color: #BBDDD7; }
+.prompt .c { color: #BFC5BE; }
+
+.tests { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.test { padding: 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); display: grid; gap: 6px; align-content: start; font-size: .92rem; line-height: 1.5; }
+.test .label { color: var(--accent); }
+.test q { font-style: italic; }
+.test .expect { color: var(--muted); }
+
+/* Risks */
+.risks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.risk { padding: 16px; border-top: 2px solid var(--ink); display: grid; gap: 6px; align-content: start; font-size: .95rem; }
+.risk h4 { font-size: 1.02rem; font-weight: 700; }
+
+.human-box { padding: 20px; border-radius: 8px; background: var(--human-soft); display: grid; gap: 8px; }
+.human-box h3 { color: var(--human); font-size: 1.15rem; }
+.human-box p { max-width: 65ch; }
+
+/* Footer */
+.contact { margin-top: 88px; padding-top: 32px; border-top: 3px solid var(--ink); display: grid; gap: 16px; }
+.contact h2 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); font-weight: 800; }
+.contact-row { display: flex; flex-wrap: wrap; gap: 10px 28px; font-family: var(--font-mono); font-size: .9rem; }
+.contact-row span { user-select: all; }
+
+@media (max-width: 720px) {
+  .flows { grid-template-columns: 1fr; }
+  .triggers li { grid-template-columns: 1fr; gap: 4px; }
+  .triggers .arrow { display: none; }
+  .wrap { padding-inline: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<style>
+:root {
+  --s1: #253B3A; --s2: #527E7A; --s3: #BFC5BE; --s4: #BBDDD7;
+  --ok: #253B3A; --ok-soft: #D7ECE8; --wait: #527E7A; --wait-soft: #EAF5F2;
+}
+
+.principles { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.principles li { background: var(--surface); padding: 18px; display: grid; gap: 6px; align-content: start; }
+.principles h3 { font-size: 1.05rem; font-weight: 700; }
+.principles p { font-size: .93rem; color: var(--muted); line-height: 1.5; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat-tile { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; display: grid; gap: 2px; align-content: start; }
+.stat-tile b { font-family: var(--font-display); font-size: 1.9rem; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat-tile span { font-size: .85rem; color: var(--muted); line-height: 1.4; }
+.stat-tile small { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); margin-top: 4px; word-break: break-word; }
+.provenance { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; color: var(--muted); max-width: 70ch; }
+.provenance::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+
+.links { display: flex; flex-wrap: wrap; gap: 8px; }
+.links a { font-family: var(--font-mono); font-size: .8rem; padding: 6px 12px; border: 1px solid var(--accent); border-radius: 4px; text-decoration: none; }
+.links a:hover { background: var(--accent-soft); }
+
+.pill { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.met { background: var(--ok-soft); color: var(--ok); }
+.pill.met::before { content: "✓"; }
+.pill.open { background: var(--wait-soft); color: var(--wait); }
+.pill.open::before { content: "○"; }
+.src { font-family: var(--font-mono); font-size: .7rem; color: var(--muted); }
+
+/* Charts */
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.chart h4 { font-size: 1.02rem; font-weight: 700; }
+.chart .sub { font-size: .88rem; color: var(--muted); margin-top: -8px; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.bars { display: grid; gap: 7px; }
+.bar-row { display: grid; grid-template-columns: minmax(96px, 34%) 1fr; gap: 10px; align-items: center; font-size: .86rem; }
+.bar-row .name { color: var(--muted); font-family: var(--font-mono); font-size: .76rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { position: relative; height: 18px; }
+.fill { position: absolute; left: 0; top: 1px; bottom: 1px; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 2px; cursor: default; }
+.fill:hover { filter: brightness(1.12); }
+.val { position: absolute; top: 50%; transform: translate(6px, -50%); font-family: var(--font-mono); font-size: .76rem; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.target { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 2px dashed var(--human); }
+.target-label { font-family: var(--font-mono); font-size: .72rem; color: var(--human); display: flex; justify-content: space-between; }
+.axis { display: grid; grid-template-columns: minmax(96px, 34%) 1fr; gap: 10px; }
+.axis .ticks { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: .7rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4px; }
+
+.stack { display: flex; height: 30px; gap: 2px; }
+.stack span { display: block; height: 100%; cursor: default; }
+.stack span:first-child { border-radius: 4px 0 0 4px; }
+.stack span:last-child { border-radius: 0 4px 4px 0; }
+.stack span:hover { filter: brightness(1.12); }
+.stack-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .86rem; }
+.stack-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.stack-legend i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+.stack-legend b { font-family: var(--font-mono); font-size: .8rem; font-variant-numeric: tabular-nums; }
+
+#tip { position: fixed; z-index: 20; pointer-events: none; background: var(--ink); color: var(--paper); font-family: var(--font-mono); font-size: .76rem; padding: 6px 9px; border-radius: 4px; max-width: 260px; line-height: 1.45; }
+
+.decisions { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.decisions li { display: grid; gap: 4px; padding-left: 16px; border-left: 2px solid var(--line); max-width: 70ch; }
+.decisions h4 { font-size: 1.05rem; font-weight: 700; }
+.bugs td:first-child { font-family: var(--font-mono); font-size: .85rem; }
+
+.earlier { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.earlier a { display: grid; gap: 6px; padding: 16px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; align-content: start; }
+.earlier a:hover { border-color: var(--accent); }
+.earlier h3 { font-size: 1.08rem; font-weight: 700; }
+.earlier p { font-size: .92rem; color: var(--muted); line-height: 1.5; }
+.edu { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.edu-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.edu-list li { display: grid; gap: 2px; }
+.edu-list b { font-family: var(--font-display); font-size: 1.02rem; }
+.edu-list span { font-size: .9rem; color: var(--muted); font-family: var(--font-mono); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-family: var(--font-mono); font-size: .78rem; padding: 4px 9px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); }
+</style>
+
+<header class="wrap hero">
+  <p class="label">AI Product Manager · Portfolio</p>
+  <h1>Ishita Rawat</h1>
+  <p class="lede">I define the problem, write the PRD, and build the thing, with evals and guardrails from day one.</p>
+  <div class="hero-meta">
+    <span><b>B.Tech CSE</b> Krishna Engineering College, 2025</span>
+    <span><b>PM with Generative &amp; Agentic AI</b> BITSOM × Masai</span>
+    <span><b>Based in</b> New Delhi</span>
+  </div>
+  <div class="stats">
+    <div class="stat-tile"><b>78</b><span>eval cases across two AI products, all passing</span></div>
+    <div class="stat-tile"><b>85</b><span>automated unit tests</span></div>
+    <div class="stat-tile"><b>0</b><span>fabrications, wrong actions or data leaks in any eval run</span></div>
+    <div class="stat-tile"><b>2</b><span>live browser demos you can try now</span></div>
+  </div>
+  <p class="provenance">Every number on this page comes from my public GitHub repositories. The evals and tests were re-run from source on 8 Oct 2026, and each figure names the file it comes from.</p>
+  <div class="links">
+    <a href="https://github.com/ishitarawatt" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/in/ishita-rawat-970190277" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="#contact">Contact</a>
+  </div>
+</header>
+
+<nav class="jump" aria-label="Sections">
+  <div class="wrap">
+    <a href="#principles">How I build</a>
+    <a href="#copilot">Job Copilot</a>
+    <a href="#support">Support Desk</a>
+    <a href="#footprint">Build data</a>
+    <a href="#agnasight">AgnaSight</a>
+    <a href="#earlier">Earlier work</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section id="principles">
+    <div class="sec-head">
+      <p class="label">How I build AI products</p>
+      <h2>Models propose. Code decides.</h2>
+      <p>Both of my multi-agent products follow the same five rules. They come from one question: where is the model allowed to be creative, and where must its output be checked?</p>
+    </div>
+    <ul class="principles">
+      <li><h3>Split work by risk</h3><p>LLM agents generate content. Deterministic code checks policy, facts and amounts.</p></li>
+      <li><h3>Fail closed</h3><p>If output can't be verified, a human reviews it. Users never see the unverified version.</p></li>
+      <li><h3>Bounded autonomy</h3><p>Every retry and revision loop has a hard cap, then escalates.</p></li>
+      <li><h3>Evals are release gates</h3><p>Safety metrics must be exactly zero to ship. One fabrication fails the build.</p></li>
+      <li><h3>Observable by default</h3><p>Every agent step is traced and every action is audited.</p></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="label">Featured work</p>
+      <h2>Three products, built end to end</h2>
+    </div>
+    <div class="index">
+      <a href="#copilot">
+        <span class="label">Multi-agent · career tools</span>
+        <h3>Job Application Copilot</h3>
+        <p>Tailors a résumé to a job posting without inventing experience, then coaches the candidate on honest gaps.</p>
+        <span class="stat">59/59 offline evals · 8/8 live on real Claude</span>
+      </a>
+      <a href="#support">
+        <span class="label">Multi-agent · customer support</span>
+        <h3>Support Desk</h3>
+        <p>Resolves routine tickets end to end, including refunds, with code-enforced policy and human approval above $100.</p>
+        <span class="stat">63.2% auto-resolved · 100% escalation recall</span>
+      </a>
+      <a href="#agnasight">
+        <span class="label">AI analytics · sales</span>
+        <h3>AgnaSight</h3>
+        <p>Deal intelligence for sales teams: risk flags, next actions and forecasts from raw pipeline data.</p>
+        <span class="stat">Live at agnasight.com</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- JOB COPILOT -->
+  <article class="case" id="copilot">
+    <div class="case-head">
+      <p class="label">Case study 01 · Multi-agent product</p>
+      <h2>Job Application Copilot</h2>
+      <p class="summary">Can AI rewrite a résumé in a way a candidate can trust without rechecking every line?</p>
+      <div class="facts"><span>Python · Anthropic SDK</span><span>6 agents</span><span>PRD · guardrails · monitoring · launch plan</span><span>CI with eval gates</span></div>
+      <div class="links">
+        <a href="https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/" target="_blank" rel="noopener">Try the live demo</a>
+        <a href="https://github.com/ishitarawatt/job-copilot" target="_blank" rel="noopener">Repository</a>
+        <a href="https://github.com/ishitarawatt/AI-PM-portfolio/blob/main/job-copilot/CASE_STUDY.md" target="_blank" rel="noopener">Full case study</a>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>The problem</h3>
+      <p>Tailoring a résumé for each application takes 30 to 60 minutes, so most people skip it. Pasting everything into a general chatbot is faster, but chatbots embellish. Small inflations, like "supported" becoming "led" or a team of 4 becoming 15, can end a candidacy when an interviewer probes them.</p>
+    </div>
+
+    <div class="block">
+      <h3>PRD targets vs. measured results</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Metric</th><th>PRD target</th><th>Measured</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Fabrication in surfaced résumés</td><td class="num">0% (hard gate)</td><td class="num after">0% · 59 offline + 8 live</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>Fabrication in cover letters</td><td class="num">0%</td><td class="num after">0%</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>Personal data leaked</td><td class="num">0%</td><td class="num after">0%</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>Critic reject → recovered</td><td class="num">≥ 70%</td><td class="num after">3 of 3 live faults</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>p95 end-to-end latency (live)</td><td class="num">&lt; 25 s</td><td class="num after">slowest of 8: 19.0 s</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>Faithful drafts wrongly rejected</td><td class="num">watch</td><td class="num after">0 of 4</td><td><span class="pill met">OK</span></td></tr>
+          <tr><td>Gap-report accuracy vs human label</td><td class="num">≥ 90%</td><td class="num">needs labelled data</td><td><span class="pill open">Next</span></td></tr>
+          <tr><td>Cost per run</td><td class="num">&lt; $0.05</td><td class="num">not yet measured</td><td><span class="pill open">Next</span></td></tr>
+          <tr><td>2-week return rate</td><td class="num">≥ 30%</td><td class="num">needs beta users</td><td><span class="pill open">Next</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="src">Sources: docs/PRD.md §6 · evals/run_evals.py (re-run 8 Oct 2026) · evals/results/live-claude-2026-10-07.json</p>
+    </div>
+
+    <div class="block">
+      <h3>What the evals cover</h3>
+      <div class="charts">
+        <div class="chart">
+          <h4>59 eval cases by role family</h4>
+          <p class="sub">Every family passes 100%.</p>
+          <div class="bars" data-max="15">
+            <div class="bar-row"><span class="name">Product</span><div class="track"><div class="fill" data-v="13" data-tip="Product roles: 13 of 13 pass"></div></div></div>
+            <div class="bar-row"><span class="name">Input handling</span><div class="track"><div class="fill" data-v="12" data-tip="Input handling (injection, PII, bad input): 12 of 12 pass"></div></div></div>
+            <div class="bar-row"><span class="name">Data</span><div class="track"><div class="fill" data-v="9" data-tip="Data roles: 9 of 9 pass"></div></div></div>
+            <div class="bar-row"><span class="name">ML</span><div class="track"><div class="fill" data-v="7" data-tip="ML roles: 7 of 7 pass"></div></div></div>
+            <div class="bar-row"><span class="name">Backend</span><div class="track"><div class="fill" data-v="6" data-tip="Backend roles: 6 of 6 pass"></div></div></div>
+            <div class="bar-row"><span class="name">Frontend</span><div class="track"><div class="fill" data-v="6" data-tip="Frontend roles: 6 of 6 pass"></div></div></div>
+            <div class="bar-row"><span class="name">Ops</span><div class="track"><div class="fill" data-v="6" data-tip="Ops roles: 6 of 6 pass"></div></div></div>
+          </div>
+          <p class="src">evals/cases.json · BY FAMILY output of run_evals.py</p>
+        </div>
+        <div class="chart">
+          <h4>What each case expects the system to do</h4>
+          <p class="sub">A fifth of the suite tests the system refusing or escalating, not just succeeding.</p>
+          <div class="stack" role="img" aria-label="47 ok, 8 needs human, 4 blocked">
+            <span style="flex:47;background:var(--s1)" data-tip="ok: 47 cases (79.7%). Verified résumé returned."></span>
+            <span style="flex:8;background:var(--s2)" data-tip="needs_human: 8 cases (13.6%). Résumé withheld, human reviews."></span>
+            <span style="flex:4;background:var(--s3)" data-tip="blocked: 4 cases (6.8%). Unusable input, reason returned."></span>
+          </div>
+          <div class="stack-legend">
+            <span><i style="background:var(--s1)"></i>Verified, returned <b>47</b></span>
+            <span><i style="background:var(--s2)"></i>Withheld for a human <b>8</b></span>
+            <span><i style="background:var(--s3)"></i>Blocked input <b>4</b></span>
+          </div>
+          <p class="src">expect.status in evals/cases.json</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Live run on real Claude</h3>
+      <div class="chart">
+        <h4>Seconds per case, 7 Oct 2026</h4>
+        <p class="sub">All 8 cases passed. Three had faults planted on purpose; the checks caught every one.</p>
+        <div class="bars" data-max="25">
+          <div class="bar-row"><span class="name">happy_path</span><div class="track"><div class="fill" data-v="19" data-tip="happy_path: 19.0 s · ok"></div><div class="target" style="left:100%"></div></div></div>
+          <div class="bar-row"><span class="name">gaps_reported</span><div class="track"><div class="fill" data-v="17.2" data-tip="gaps_reported_honestly: 17.2 s · ok"></div><div class="target" style="left:100%"></div></div></div>
+          <div class="bar-row"><span class="name">inflated_verb ⚑</span><div class="track"><div class="fill" data-v="16.1" data-tip="inflated_verb_caught: 16.1 s · planted 'supported' → 'led', rejected and recovered"></div><div class="target" style="left:100%"></div></div></div>
+          <div class="bar-row"><span class="name">prompt_injection</span><div class="track"><div class="fill" data-v="11.3" data-tip="prompt_injection_stripped: 11.3 s · injection removed"></div><div class="target" style="left:100%"></div></div></div>
+          <div class="bar-row"><span class="name">letter_exaggerated ⚑</span><div class="track"><div class="fill" data-v="9.1" data-tip="exaggerated_letter_caught: 9.1 s · planted 'single-handedly led 15', rejected and recovered"></div><div class="target" style="left:100%"></div></div></div>
+          <div class="bar-row"><span class="name">made_up_bullet ⚑</span><div class="track"><div class="fill" data-v="8.2" data-tip="made_up_bullet_caught: 8.2 s · planted '$12M, 40-person team', rejected and recovered"></div><div class="target" style="left:100%"></div></div></div>
+          <div class="bar-row"><span class="name">cover_letter</span><div class="track"><div class="fill" data-v="5.8" data-tip="cover_letter_checked: 5.8 s · ok"></div><div class="target" style="left:100%"></div></div></div>
+          <div class="bar-row"><span class="name">short_posting</span><div class="track"><div class="fill" data-v="0" data-tip="short_posting_blocked: 0 s · blocked before any model call"></div><div class="target" style="left:100%"></div></div></div>
+        </div>
+        <div class="axis"><span></span><div class="ticks"><span>0 s</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25 s</span></div></div>
+        <div class="target-label"><span>⚑ fault planted on purpose</span><span>┆ PRD target: p95 under 25 s</span></div>
+        <p class="src">evals/results/live-claude-2026-10-07.json</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>How it works</h3>
+      <div class="legend"><span><i class="tag ai">LLM</i> model generates</span><span><i class="tag rule">Code</i> deterministic check</span><span><i class="tag human">Human</i> user decides</span></div>
+      <ol class="flow">
+        <li><span class="tag rule">Code</span><div><b>Input guardrails</b>Unusable input is blocked with a reason, before any model call. Prompt injection and personal data are stripped.</div></li>
+        <li><span class="tag ai">LLM</span><div><b>Analyzer → Tailor</b>Reads the posting, then rewrites bullets toward it. Each tailored bullet links back to its source bullet.</div></li>
+        <li><span class="tag rule">Code</span><div><b>Critic</b>The only verifier that can block. Each bullet must match one original (80%+ word overlap), add no new numbers, and claim no more ownership than the source. One retry, then fail closed.</div></li>
+        <li><span class="tag ai">LLM</span><div><b>Reviewer (advisory), Coach, Cover Letter</b>Flags subtle exaggeration, names honest skill gaps, and drafts a letter with its own checker.</div></li>
+        <li><span class="tag human">Human</span><div><b>Candidate reviews</b>Output is <code>ok</code>, <code>needs_human</code> (résumé withheld) or <code>blocked</code> (with the reason).</div></li>
+      </ol>
+    </div>
+
+    <div class="block">
+      <h3>Bugs the evals caught</h3>
+      <div class="tbl bugs"><table>
+        <thead><tr><th>Failure</th><th>Why it slipped through</th><th>Fix (each with a regression test)</th></tr></thead>
+        <tbody>
+          <tr><td>"Supported" → "Led"</td><td>One changed verb still scored 90% word overlap</td><td>Ownership-verb tiers, plus blocked scope words like "entire"</td></tr>
+          <tr><td>Nouns read as verbs</td><td>Verb check scanned every word</td><td>Check the opening verb and any verb the rewrite adds</td></tr>
+          <tr><td>Letter matched wrong bullet</td><td>Generic shared words created false matches</td><td>Compare each sentence only to its single closest bullet</td></tr>
+          <tr><td>"Java" matched "JavaScript"</td><td>Substring skill matching</td><td>Whole-skill matching, now covered by an eval case</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="block">
+      <h3>Key product decisions</h3>
+      <ul class="decisions">
+        <li><h4>Code verifies, not a model</h4><p>A model checking a model shares its blind spots. The Critic is deterministic, so its behaviour is predictable and testable.</p></li>
+        <li><h4>No résumé is better than a wrong one</h4><p>If no draft passes after one retry, the user gets a reason instead of a résumé.</p></li>
+        <li><h4>Rules gate, AI advises</h4><p>The AI Reviewer stays advisory until 100 labelled bullet pairs show its precision.</p></li>
+      </ul>
+      <div class="human-box"><h3>Next milestone</h3><p>Grow the live eval set to 100+ real résumé and posting pairs, then a 100-user beta. Go/no-go gate: zero fabrications reached a user.</p></div>
+    </div>
+  </article>
+
+  <!-- SUPPORT DESK -->
+  <article class="case" id="support">
+    <div class="case-head">
+      <p class="label">Case study 02 · Multi-agent product</p>
+      <h2>Support Desk</h2>
+      <p class="summary">Routine tickets like refunds, cancellations, order status and password resets wait hours for a human. Can agents resolve them end to end without ever moving money wrongly?</p>
+      <div class="facts"><span>Python</span><span>6 agents + orchestrator</span><span>Takes real actions</span><span>Approval queue</span></div>
+      <div class="links">
+        <a href="https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/" target="_blank" rel="noopener">Try the live demo</a>
+        <a href="https://github.com/ishitarawatt/AI-PM-portfolio/tree/main/support-desk" target="_blank" rel="noopener">Repository</a>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>PRD targets vs. measured results</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Metric</th><th>PRD target</th><th>Measured</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Wrong or unauthorised actions</td><td class="num">0 (release gate)</td><td class="num after">0</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>False promises in replies</td><td class="num">0 (release gate)</td><td class="num after">0</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>Personal data leaks</td><td class="num">0 (release gate)</td><td class="num after">0</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>Escalation recall</td><td class="num">100% (release gate)</td><td class="num after">100%</td><td><span class="pill met">Met</span></td></tr>
+          <tr><td>Auto-resolution rate</td><td class="num">50–65%</td><td class="num after">63.2% (12 of 19)</td><td><span class="pill met">In band</span></td></tr>
+          <tr><td>Agent steps traced with errors</td><td class="num">—</td><td class="num after">0 of 116</td><td><span class="pill met">OK</span></td></tr>
+          <tr><td>Median time to resolution</td><td class="num">&lt; 2 min vs ~6 h</td><td class="num">needs live traffic</td><td><span class="pill open">Next</span></td></tr>
+          <tr><td>CSAT and reopen rate</td><td class="num">≥ human baseline</td><td class="num">needs live traffic</td><td><span class="pill open">Next</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="src">Sources: docs/PRD.md §6 · evals/run_evals.py (re-run 8 Oct 2026, mock model with fault injection)</p>
+    </div>
+
+    <div class="block">
+      <div class="chart">
+        <h4>How the 19 eval tickets ended</h4>
+        <p class="sub">Auto-resolution is capped on purpose. The PRD notes that pushing it higher usually means escalating less, trading safety for a vanity number.</p>
+        <div class="stack" role="img" aria-label="12 resolved, 4 escalated, 2 awaiting customer, 1 pending approval">
+          <span style="flex:12;background:var(--s1)" data-tip="Resolved automatically: 12 (63.2%)"></span>
+          <span style="flex:4;background:var(--s2)" data-tip="Escalated to a human: 4 (21.1%). Legal threat, someone else's order, vague ticket, persistent false promise"></span>
+          <span style="flex:2;background:var(--s3)" data-tip="Awaiting customer: 2 (10.5%). Missing or unknown order ID"></span>
+          <span style="flex:1;background:var(--s4)" data-tip="Pending approval: 1 (5.3%). Refund above the $100 limit"></span>
+        </div>
+        <div class="stack-legend">
+          <span><i style="background:var(--s1)"></i>Resolved <b>12</b></span>
+          <span><i style="background:var(--s2)"></i>Escalated <b>4</b></span>
+          <span><i style="background:var(--s3)"></i>Asked customer <b>2</b></span>
+          <span><i style="background:var(--s4)"></i>Human approval <b>1</b></span>
+        </div>
+        <p class="src">expect.status in support-desk/evals/cases.json</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Policy is code, not a prompt</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Rule</th><th>Value</th><th>Eval that proves it</th></tr></thead>
+        <tbody>
+          <tr><td>Refund window</td><td class="num">30 days</td><td><code>refund_outside_window_denied</code></td></tr>
+          <tr><td>Auto-refund limit</td><td class="num">$100</td><td><code>large_refund_needs_approval</code></td></tr>
+          <tr><td>Duplicate refunds</td><td class="num">blocked</td><td><code>already_refunded_denied</code></td></tr>
+          <tr><td>Order ownership</td><td class="num">checked twice</td><td><code>someone_elses_order_escalates</code></td></tr>
+          <tr><td>Amounts come from code</td><td class="num">allow-list</td><td><code>rogue_refund_amount_blocked</code></td></tr>
+          <tr><td>Prompt injection</td><td class="num">ignored</td><td><code>prompt_injection_ignored</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="human-box"><h3>What stays human</h3><p>Refunds above $100, legal threats, anything outside the allow-list, and every ticket the system can't verify. Customers get a fixed holding reply, never an unverified draft.</p></div>
+    </div>
+  </article>
+
+  <!-- FOOTPRINT -->
+  <section id="footprint">
+    <div class="sec-head">
+      <p class="label">Build data</p>
+      <h2>What went into the two agent products</h2>
+      <p>PM work isn't only the PRD. Here is how the effort splits between product code, tests, evals and documentation.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Measure</th><th>Job Copilot</th><th>Support Desk</th><th>Total</th></tr></thead>
+      <tbody>
+        <tr><td>Product code (Python lines)</td><td class="num">830</td><td class="num">922</td><td class="num">1,752</td></tr>
+        <tr><td>Test code (Python lines)</td><td class="num">426</td><td class="num">143</td><td class="num">569</td></tr>
+        <tr><td>Unit tests passing</td><td class="num after">69</td><td class="num after">16</td><td class="num after">85</td></tr>
+        <tr><td>Eval cases passing</td><td class="num after">59</td><td class="num after">19</td><td class="num after">78</td></tr>
+        <tr><td>Product docs (PRD, architecture, guardrails, monitoring, launch plan)</td><td class="num">2,602 words</td><td class="num">2,157 words</td><td class="num">4,759 words</td></tr>
+      </tbody>
+    </table></div>
+    <p class="src" style="margin-top:10px">Counted from the cloned repositories on 8 Oct 2026: src/, tests/ and docs/ folders.</p>
+  </section>
+
+  <!-- AGNASIGHT -->
+  <article class="case" id="agnasight">
+    <div class="case-head">
+      <p class="label">Case study 03 · AI analytics</p>
+      <h2>AgnaSight</h2>
+      <p class="summary">Sales pipelines are hard to read. Raw CRM data doesn't say which deals are at risk, what to do next, or where revenue is heading.</p>
+      <div class="facts"><span>TypeScript · Vite · Tailwind</span><span>Vitest</span><span>Live product</span></div>
+      <div class="links">
+        <a href="https://agnasight.com" target="_blank" rel="noopener">Live demo</a>
+        <a href="https://github.com/ishitarawatt/AgnaSight" target="_blank" rel="noopener">Repository</a>
+      </div>
+    </div>
+    <div class="block">
+      <h3>From raw data to clear signals</h3>
+      <ol class="flow">
+        <li><span class="tag rule">Data</span><div><b>Sources</b>CRM records, calls and email.</div></li>
+        <li><span class="tag rule">Pipeline</span><div><b>ETL</b>Cleans and joins activity into one view per deal.</div></li>
+        <li><span class="tag ai">AI</span><div><b>Risk scoring and deal prediction</b>Deal probability, engagement signals and a revenue forecast.</div></li>
+        <li><span class="tag human">Human</span><div><b>Rep and manager act</b>Dashboard shows at-risk deals and a suggested next action for each.</div></li>
+      </ol>
+    </div>
+    <div class="block">
+      <h3>What it still needs to prove</h3>
+      <p>AgnaSight doesn't have measured accuracy yet, so I don't claim any. The roadmap puts measurement first.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Roadmap item</th><th>What it would measure</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Model evaluation and accuracy tracking</td><td>Predicted risk vs. actual won/lost deals</td><td><span class="pill open">Next</span></td></tr>
+          <tr><td>Live CRM integrations</td><td>Signal freshness without manual import</td><td><span class="pill open">Next</span></td></tr>
+          <tr><td>Team-level alerting</td><td>Whether managers act on slipping segments</td><td><span class="pill open">Next</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </article>
+
+  <section id="earlier">
+    <div class="sec-head">
+      <p class="label">Earlier work</p>
+      <h2>Builds from college</h2>
+    </div>
+    <div class="earlier">
+      <a href="https://github.com/ishitarawatt/ARchive-Augmented-Reality-System" target="_blank" rel="noopener">
+        <span class="label">2025 · AR · computer vision</span>
+        <h3>ARchive</h3>
+        <p>Shoppers can't judge size or fit from flat photos. An AR experience that places interactive 3D product models in the real world.</p>
+      </a>
+      <a href="https://github.com/ishitarawatt/RECOGNIZE-YOU" target="_blank" rel="noopener">
+        <span class="label">2024 · ML · security</span>
+        <h3>Recognise You</h3>
+        <p>Face-recognition login from an image or live webcam, using PCA, LDA and an MLP classifier.</p>
+      </a>
+      <a href="https://github.com/ishitarawatt/neoflo-product-intern-case" target="_blank" rel="noopener">
+        <span class="label">Product case</span>
+        <h3>Neoflo product intern case</h3>
+        <p>A product case submission with a working HTML prototype.</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="label">Background</p>
+      <h2>Education and skills</h2>
+    </div>
+    <div class="edu">
+      <ul class="edu-list">
+        <li><b>Product Management with Generative &amp; Agentic AI</b><span>BITSOM × Masai · Aug 2025 – Mar 2026</span></li>
+        <li><b>B.Tech, Computer Science &amp; Engineering</b><span>Krishna Engineering College · 2021 – 2025</span></li>
+        <li><b>Data Science &amp; Analytics</b><span>HP LIFE · 2025</span></li>
+        <li><b>Artificial Intelligence internship</b><span>Internship Studio · 2024</span></li>
+        <li><b>Full Stack Development (MERN)</b><span>Pregrad · 2023</span></li>
+      </ul>
+      <div style="display:grid;gap:14px;align-content:start">
+        <p class="label">Product</p>
+        <div class="chips"><span>PRDs</span><span>Eval design</span><span>Guardrails</span><span>Launch planning</span><span>Success metrics</span><span>Figma</span></div>
+        <p class="label">Technical</p>
+        <div class="chips"><span>Python</span><span>TypeScript</span><span>React</span><span>Node.js</span><span>MongoDB</span><span>Anthropic SDK</span><span>pytest</span><span>GitHub Actions</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <p class="label">Contact</p>
+    <h2>Looking for APM and AI product roles</h2>
+    <p>I'd like to work where product decisions and the build sit close together, and where getting AI right matters more than shipping it fast.</p>
+    <div class="contact-row">
+      <span>ishita27rawat@gmail.com</span>
+      <a href="https://www.linkedin.com/in/ishita-rawat-970190277" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/ishitarawatt" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+</main>
+
+<div id="tip" hidden></div>
+<script>
+document.querySelectorAll('.bars').forEach(function (g) {
+  var max = parseFloat(g.dataset.max);
+  g.querySelectorAll('.fill').forEach(function (f) {
+    var v = parseFloat(f.dataset.v);
+    f.style.width = (v / max * 100) + '%';
+    var lab = document.createElement('span');
+    lab.className = 'val';
+    lab.textContent = (g.dataset.max === '25') ? v.toFixed(1) + ' s' : String(v);
+    lab.style.left = (v / max * 100) + '%';
+    f.parentNode.appendChild(lab);
+  });
+});
+(function () {
+  var tip = document.getElementById('tip');
+  document.addEventListener('pointerover', function (e) {
+    var t = e.target.closest('[data-tip]');
+    if (!t) { tip.hidden = true; return; }
+    tip.textContent = t.dataset.tip; tip.hidden = false;
+  });
+  document.addEventListener('pointermove', function (e) {
+    if (tip.hidden) return;
+    var x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
+    tip.style.left = Math.max(8, x) + 'px'; tip.style.top = (e.clientY + 16) + 'px';
+  });
+  document.addEventListener('pointerout', function (e) { if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('[data-tip]')) tip.hidden = true; });
+})();
+</script>
+</body>
+</html>
