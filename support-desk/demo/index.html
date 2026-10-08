@@ -174,6 +174,7 @@ input[type="search"] { font: 13.5px/1.4 var(--f-ui); color: var(--ink); backgrou
 .queue select.reason { font-size: 12px; padding: 6px 8px; max-width: 100%; }
 .tile.pass .v { color: var(--ok); } .tile.fail .v { color: var(--bad); }
 .eval-summary { font-weight: 600; font-size: 13.5px; } .eval-summary.ok { color: var(--ok); } .eval-summary.bad { color: var(--bad); }
+footer a { color: var(--accent); text-underline-offset: 3px; }
 footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-width: 78ch; }
 
 @media (max-width: 900px) {
@@ -289,7 +290,7 @@ select, input[type="text"], textarea { border-radius: 12px; }
 
 <nav class="top" aria-label="Main">
   <a class="brand" href="#top"><i></i>Support Desk</a>
-  <span class="tags"><a href="#desk">Inbox</a><a href="#tiles">Dashboard</a><a href="#ops">Approvals</a><a href="#audit">Audit log</a><a href="#evals">Evals</a></span>
+  <span class="tags"><a href="#desk">Inbox</a><a href="#tiles">Dashboard</a><a href="#ops">Approvals</a><a href="#audit">Audit log</a><a href="#evals">Evals</a><a class="ext" href="https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/" target="_blank" rel="noopener">Job Copilot ↗</a></span>
 </nav>
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="page" id="top">
@@ -379,6 +380,7 @@ select, input[type="text"], textarea { border-radius: 12px; }
   </section>
 
   <footer>
+    <p>Part of a two-product portfolio: see the other one, <a href="https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/" target="_blank" rel="noopener">Job Application Copilot</a>, which tailors a resume without inventing experience. <a href="https://github.com/ishitarawatt/AI-PM-portfolio" target="_blank" rel="noopener">Code and case studies</a>.</p>
     <p>How it stays safe: the Resolver (an AI) can only propose one action. The Policy Guard, plain code, decides: refunds only for the ticket owner's delivered orders, within 30 days, never more than the refundable balance, and anything over $100 goes to the approval queue. The QA Critic, also code, blocks replies that claim something the system didn't do, state the wrong amount, mention someone else's order or aren't grounded in a help article. The Executor re-checks the hard limits itself and never runs the same action twice. Escalation and approval messages are fixed templates, never generated.</p>
     <p>Live mode sends ticket text to the live AI model using your own account and asks your permission first. Card numbers and emails are removed before anything is sent.</p>
   </footer>

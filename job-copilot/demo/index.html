@@ -209,9 +209,14 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-widt
   .pipeline li[data-state="running"] .state { animation: pulse 1.2s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: .45; } }
 }
+.sites { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font: 500 12.5px/1 var(--f-ui); }
+.sites span { color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-size: 11px; margin-right: 4px; }
+.sites a { color: var(--accent); text-decoration: none; border: 1px solid var(--rule); border-radius: 999px; padding: 7px 12px; }
+.sites a:hover { border-color: var(--accent); }
 </style>
 
 <div class="wrap">
+  <nav class="sites" aria-label="Portfolio"><span>Portfolio</span><a href="https://github.com/ishitarawatt/AI-PM-portfolio" target="_blank" rel="noopener">Code</a><a href="https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/" target="_blank" rel="noopener">Support Desk ↗</a></nav>
   <header>
     <span class="eyebrow">Multi-agent demo</span>
     <h1>Job Application Copilot</h1>
