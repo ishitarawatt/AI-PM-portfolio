@@ -27,6 +27,6 @@ Input guardrails → Triage (LLM) → routing → Knowledge → Resolver (LLM) �
 
 ## Next up
 1. Live evals (`--live`) and record results in README.
-2. An Evals panel in the demo like `job-copilot/demo/` (live evals without an API key).
+2. (Done) Evals panel in the demo. Keep `EVAL_CASES` in `demo/index.html` in sync with `evals/cases.json`.
 3. Embedding-based retrieval + a retrieval eval.
-4. Multi-turn conversations (customer replies to `awaiting_customer`).
+4. (Demo only so far) Multi-turn: the demo re-runs the ticket with the customer's reply appended. Add it to the Python orchestrator with an eval case.
