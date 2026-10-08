@@ -17,22 +17,13 @@ resume + job description
            ▼
  ┌──────────────────────┐        ┌────────────────────────┐
  │ Tailor (LLM)         │◀──────▶│ Critic (deterministic) │
- │ source-facts-only    │ issues │ trace·numbers·claims   │
+ │ source-facts-only    │ issues │ trace, numbers, verbs  │
  └─────────┬────────────┘ fed    └────────────────────────┘
            │ approved       back, max 1 loop; still failing ──▶ needs_human
            ▼                                  (resume withheld)
  ┌──────────────────────┐
- │ Reviewer (LLM)       │  advisory: flags subtle exaggeration to double-check, never blocks
- └─────────┬────────────┘
-           ▼
- ┌──────────────────────┐
  │ Coach (LLM)          │  analysis + verified gaps → questions, honest gap talking points
  └─────────┬────────────┘
-           ▼  (optional, --cover-letter)
- ┌──────────────────────┐        ┌────────────────────────┐
- │ Cover Letter (LLM)   │◀──────▶│ Letter checker (code)  │  max 1 rewrite; still failing → letter withheld,
- │ approved bullets only│ issues │ numbers·leads·gaps     │  resume result unaffected
- └─────────┬────────────┘        └────────────────────────┘
            ▼
      CopilotResult  (every step traced to logs/traces.jsonl)
 ```
@@ -43,9 +34,7 @@ resume + job description
 | Analyzer | LLM | sanitized JD | `JobAnalysis` | up to 2 retries on malformed JSON, then `needs_human` |
 | Tailor | LLM | parsed resume + analysis (+ critic feedback) | `TailoredResume` | same retry policy |
 | Critic | Code | source resume + tailored output | `CriticReport` | rejects → tailor loop (max 1) → escalate |
-| Reviewer | LLM (advisory) | (original, tailored) bullet pairs | review notes | failure tolerated, never blocks |
 | Coach | LLM | analysis + verified gaps | `InterviewPrep` | same retry policy |
-| Cover Letter | LLM (optional) | role + approved bullets + gaps | letter text | checker loop (max 1) → withheld; never affects resume status |
 
 ## Key design decisions
 1. **Critic is not an LLM.** Verification by the same class of system that fabricates is weak. A deterministic check is auditable, free, and cannot be sweet-talked.
@@ -54,7 +43,6 @@ resume + job description
 4. **Typed contracts** (`schemas.py`) between agents; each agent parses model output into a dataclass, so drift fails loudly in one place.
 5. **Provider-agnostic.** Agents depend on the `LLMClient` protocol. `MockClient` makes CI deterministic and free; `AnthropicClient` is the live path.
 6. **Bounded autonomy.** Retry and loop limits are constants (`MAX_AGENT_RETRIES`, `MAX_CRITIC_LOOPS`); no unbounded agent loops.
-7. **Two layers against exaggeration.** Rules block what can be checked exactly (new numbers, untraceable bullets, stronger verbs, scope words); an AI reviewer flags the rest for the user without blocking. A check that can false-alarm should inform, not gate, until its precision is measured.
 
 ## Scaling notes
 Agents are stateless; the orchestrator can run per-request in a worker. Add a queue and idempotency key (hash of resume + JD) for retries and caching. Tailor and a future cover-letter agent can run in parallel once the analysis exists.

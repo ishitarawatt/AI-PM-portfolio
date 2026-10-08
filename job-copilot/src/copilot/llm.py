@@ -10,6 +10,8 @@ import os
 import re
 from typing import Protocol
 
+from .guardrails import skill_in_text
+
 
 class LLMClient(Protocol):
     def complete(self, role: str, system: str, user: str) -> str: ...
@@ -66,18 +68,14 @@ def _find_skills(text: str) -> list[str]:
 class MockClient:
     """Deterministic stand-in for an LLM.
 
-    Fault injection, so the critic / retry / escalation paths can be exercised in tests:
-      fabricate_first_n  the tailor invents a whole bullet on its first N calls
-      embellish_first_n  the tailor quietly upgrades one bullet's verb to "Led" on its first N calls
-                         (keeps >= 80% word overlap, so only the claim-strength rule catches it)
+    `fabricate_first_n` makes the tailor invent a bullet on its first N calls so
+    the critic / retry / escalation path can be exercised in tests.
     """
 
-    def __init__(self, fabricate_first_n: int = 0, embellish_first_n: int = 0, letter_inflate_first_n: int = 0):
+    def __init__(self, fabricate_first_n: int = 0, inflate_first_n: int = 0):
         self.fabricate_first_n = fabricate_first_n
-        self.embellish_first_n = embellish_first_n
-        self.letter_inflate_first_n = letter_inflate_first_n   # letter writer exaggerates on its first N calls
+        self.inflate_first_n = inflate_first_n   # strengthen a verb ("Owned" -> "Led") on the first N calls
         self.tailor_calls = 0
-        self.letter_calls = 0
 
     def complete(self, role: str, system: str, user: str) -> str:
         payload = json.loads(user)
@@ -107,8 +105,8 @@ class MockClient:
         resume, analysis = p["resume"], p["analysis"]
         want = [s.lower() for s in analysis["required_skills"] + analysis["nice_to_have"]]
         have_blob = " ".join(resume["bullets"] + resume["skills"]).lower()
-        have_skills = [s for s in analysis["required_skills"] if s.lower() in have_blob]
-        gaps = [s for s in analysis["required_skills"] if s.lower() not in have_blob]
+        have_skills = [s for s in analysis["required_skills"] if skill_in_text(s, have_blob)]
+        gaps = [s for s in analysis["required_skills"] if not skill_in_text(s, have_blob)]
 
         def score(b: str) -> int:
             return sum(1 for s in want if s in b.lower())
@@ -116,49 +114,12 @@ class MockClient:
         bullets = sorted(resume["bullets"], key=score, reverse=True)
         if self.tailor_calls <= self.fabricate_first_n:
             bullets = ["Led a 40-person team to deliver a $12M revenue increase"] + bullets
-        if self.tailor_calls <= self.embellish_first_n:
-            for i, b in enumerate(bullets):
-                first, _, rest = b.partition(" ")
-                if first.lower() not in ("led", "owned", "managed", "headed", "directed"):
-                    bullets[i] = f"Led {rest}"
-                    break
+        if self.tailor_calls <= self.inflate_first_n and bullets:
+            first, _, rest = bullets[0].partition(" ")
+            bullets = [f"Led {rest}".strip()] + bullets[1:]   # same facts, bigger claim
         top = ", ".join(have_skills[:3]) if have_skills else "relevant experience"
         summary = f"{resume.get('summary', '').strip()} Focused on {top} for the {analysis['title']} role.".strip()
         return {"summary": summary, "bullets": bullets, "matched_skills": have_skills, "gaps": gaps}
-
-    def _judge(self, p: dict) -> dict:
-        """Stand-in reviewer: flags any bullet whose wording added words the original didn't have."""
-        verdicts = []
-        for pair in p["pairs"]:
-            added = sorted(set(re.findall(r"[a-z0-9]+", pair["tailored"].lower()))
-                           - set(re.findall(r"[a-z0-9]+", pair["original"].lower())))
-            verdicts.append({"index": pair["index"],
-                             "verdict": "check" if added else "faithful",
-                             "reason": f"Adds wording not in the original: {', '.join(added)}" if added
-                                       else "Same claim as the original."})
-        return {"verdicts": verdicts}
-
-    def _letter(self, p: dict) -> dict:
-        """Stand-in writer: builds the letter from approved bullets, reused verbatim."""
-        self.letter_calls += 1
-        role, res, gaps = p["role"], p["approved_resume"], p["gaps"]
-        def clause(b: str) -> str:
-            return b[0].lower() + b[1:].rstrip(".")
-        bullets = res["bullets"][:2]
-        body = f"In my recent work I {clause(bullets[0])}."
-        if len(bullets) > 1:
-            body += f" I also {clause(bullets[1])}."
-        paras = [f"Dear Hiring Manager,",
-                 f"I'm applying for the {role['title']} role. {res['summary']}".strip(),
-                 body]
-        if gaps:
-            paras.append(f"I'm honest that {' and '.join(gaps[:2])} {'is' if len(gaps[:2]) == 1 else 'are'} newer to me, "
-                         "and I'm eager to ramp up quickly.")
-        if self.letter_calls <= self.letter_inflate_first_n:
-            paras.insert(3, "I single-handedly led a team of 15 engineers to rebuild the platform."
-                            + (f" I also have deep hands-on experience with {gaps[0]}." if gaps else ""))
-        paras.append("Thank you for your time.\n\nSincerely,\n[Your name]")
-        return {"letter": "\n\n".join(paras)}
 
     def _coach(self, p: dict) -> dict:
         analysis, gaps = p["analysis"], p["gaps"]

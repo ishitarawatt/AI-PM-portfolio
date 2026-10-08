@@ -10,4 +10,4 @@ Experience:
 - Ran A/B testing programme that lifted onboarding conversion by 14%
 - Wrote SQL and Python scripts for data analysis that cut reporting time by 30%
 - Conducted user research with 25 customers to prioritise the 2024 roadmap
-- Supported the launch of a self-serve billing portal used by 3,000 customers
+- Managed stakeholder management across engineering, sales, and support

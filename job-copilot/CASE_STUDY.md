@@ -1,3 +1,5 @@
+> **Note:** this case study describes version 1 of the product, which also had an AI Reviewer and a cover-letter writer and a recorded live run on real Claude (8/8, results kept in `evals/results/`). The current version is simpler (Analyzer, Tailor, Critic, Coach), adds an ATS-style score, and has 59 offline eval cases. A live run of the current version has not been recorded yet. Version 1 is in the git history.
+
 # Case Study: Job Application Copilot
 
 **Tailored to the job. Truthful to you.**

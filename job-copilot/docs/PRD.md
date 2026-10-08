@@ -19,7 +19,7 @@ Job seekers, especially career-switchers into product roles, send the same resum
 
 ## 4. Goals and non-goals
 **Goals:** truthful tailoring; honest gap reporting; interview prep grounded in the actual posting; safe handling of untrusted job text.
-**Non-goals (v1):** auto-applying to jobs, ATS keyword stuffing, resume design/PDF layout, multi-language.
+**Non-goals (v1):** auto-applying to jobs, writing cover letters, ATS keyword stuffing, resume design/PDF layout, multi-language.
 
 ## 5. User stories and acceptance criteria
 1. *As a candidate, I paste my resume and a job description and get a tailored resume.*
@@ -27,8 +27,7 @@ Job seekers, especially career-switchers into product roles, send the same resum
 2. *I see where I fall short.* AC: required skills with no evidence in my resume are listed as gaps, never silently covered.
 3. *I get interview questions.* AC: questions target skills I can credibly speak to; gap talking points are honest.
 4. *Hostile or broken input doesn't hurt me.* AC: injected instructions in a JD are stripped and flagged; unusable input is blocked with a reason.
-5. *I can get a cover letter in the same pass.* AC: opt-in; built only from approved bullets; every number from my resume; leadership verbs only where my bullet has them; gaps never claimed; withheld rather than shown if it can't pass.
-6. *When the system is unsure, it says so.* AC: unverifiable output is withheld and routed to `needs_human`, never shown.
+5. *When the system is unsure, it says so.* AC: unverifiable output is withheld and routed to `needs_human`, never shown.
 
 ## 6. Success metrics
 | Metric | Target | Type |

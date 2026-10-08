@@ -25,20 +25,11 @@ def render(result) -> str:
         out += ["", "== TAILORED RESUME ==", r.summary, ""] + [f"- {b}" for b in r.bullets]
         out += ["", "Matched: " + (", ".join(r.matched_skills) or "-"),
                 "Gaps: " + (", ".join(r.gaps) or "none")]
-    if result.review_notes:
-        out += ["", "== DOUBLE-CHECK (AI reviewer, advisory) =="]
-        for n in result.review_notes:
-            out += [f"- {n['bullet']}", f"   original: {n['original']}", f"   why: {n['reason']}"]
     if result.prep:
         out += ["", "== INTERVIEW PREP =="]
         for q in result.prep.questions:
             out += [f"Q: {q['question']}", f"   Tip: {q['tip']}"]
         out += [f"Gap: {g}" for g in result.prep.gap_talking_points]
-    if result.cover_letter:
-        out += ["", "== COVER LETTER (every claim checked against your resume) ==", result.cover_letter]
-    elif "cover_letter_withheld" in result.flags:
-        out += ["", "== COVER LETTER WITHHELD ==", "It kept failing its checks, so it isn't shown:"]
-        out += [f"- {i}" for i in result.cover_letter_issues]
     if result.status == "needs_human" and result.critic and not result.critic.approved:
         out += ["", "== CRITIC ISSUES =="] + [f"- {i}" for i in result.critic.issues]
     return "\n".join(out)
@@ -50,13 +41,12 @@ def main(argv=None) -> int:
     p.add_argument("--job", required=True, type=Path)
     p.add_argument("--live", action="store_true", help="use the real Anthropic API (needs ANTHROPIC_API_KEY)")
     p.add_argument("--json", action="store_true", help="print raw JSON result")
-    p.add_argument("--cover-letter", action="store_true", help="also write a checked cover letter")
     p.add_argument("--trace-file", default="logs/traces.jsonl")
     args = p.parse_args(argv)
 
     llm = AnthropicClient() if args.live else MockClient()
     tracer = Tracer(args.trace_file)
-    result = Orchestrator(llm, tracer).run(args.resume.read_text(), args.job.read_text(), cover_letter=args.cover_letter)
+    result = Orchestrator(llm, tracer).run(args.resume.read_text(), args.job.read_text())
     print(json.dumps(result.to_dict(), indent=2) if args.json else render(result))
     print("\nTELEMETRY:", json.dumps(tracer.summary()), file=sys.stderr)
     return 0 if result.status == "ok" else 2

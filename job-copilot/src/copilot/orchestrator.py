@@ -1,11 +1,12 @@
-"""Orchestrator: guardrails -> analyze -> tailor <-> critic (bounded loop) -> AI reviewer (advisory)
--> coach -> optional cover letter <-> letter checker (bounded loop). Escalates to a human on failure."""
+"""Orchestrator: guardrails -> analyze -> tailor <-> critic (bounded loop) -> coach -> escalate on failure."""
 from __future__ import annotations
 
 import json
+import re
 
-from .agents import Analyzer, Coach, CoverLetterWriter, Critic, Judge, Tailor
-from .guardrails import best_source, check_cover_letter, check_job_description, redact_pii
+from .ats import ats_score
+from .agents import Analyzer, Coach, Critic, Tailor
+from .guardrails import check_job_description, redact_pii
 from .llm import LLMClient
 from .monitoring import Tracer, approx_tokens
 from .schemas import CopilotResult
@@ -25,8 +26,8 @@ def parse_resume(text: str) -> dict:
             skills = [s.strip() for s in line.split(":", 1)[1].split(",") if s.strip()]
         elif line[0] in "-*•":
             bullets.append(line.lstrip("-*• ").strip())
-        elif (not line.endswith(":") and "[EMAIL]" not in line and "[PHONE]" not in line
-              and "|" not in line and len(line.split()) > 3):
+        elif (not line.endswith(":") and "|" not in line and len(line.split()) > 3
+              and not any(m in line for m in ("[EMAIL]", "[PHONE]", "[URL]", "[HANDLE]", "[ADDRESS]"))):
             summary_lines.append(line)  # skips the name / contact header lines
     return {"summary": " ".join(summary_lines[:2]), "skills": skills, "bullets": bullets}
 
@@ -34,8 +35,7 @@ def parse_resume(text: str) -> dict:
 class Orchestrator:
     def __init__(self, llm: LLMClient, tracer: Tracer | None = None):
         self.analyzer, self.tailor = Analyzer(llm), Tailor(llm)
-        self.coach, self.critic, self.judge = Coach(llm), Critic(), Judge(llm)
-        self.letter_writer = CoverLetterWriter(llm)
+        self.coach, self.critic = Coach(llm), Critic()
         self.tracer = tracer or Tracer(None)
 
     def _call(self, trace_id: str, name: str, fn, input_text: str):
@@ -53,7 +53,7 @@ class Orchestrator:
                 last = e
         raise RuntimeError(f"{name} failed after {MAX_AGENT_RETRIES + 1} attempts: {last}")
 
-    def run(self, resume_text: str, job_description: str, cover_letter: bool = False) -> CopilotResult:
+    def run(self, resume_text: str, job_description: str) -> CopilotResult:
         trace_id = self.tracer.new_trace_id()
         result = CopilotResult(status="ok", trace_id=trace_id)
 
@@ -85,7 +85,7 @@ class Orchestrator:
                 tailored = self._call(trace_id, "tailor",
                                       lambda: self.tailor.run(resume, analysis, feedback), json.dumps(resume))
                 with self.tracer.span(trace_id, "critic") as rec:
-                    report = self.critic.run(resume, tailored)
+                    report = self.critic.run(resume, tailored, analysis.title)
                     rec["out_tokens"] = approx_tokens(json.dumps(report.__dict__))
                 result.critic = report
                 if report.approved:
@@ -98,46 +98,12 @@ class Orchestrator:
                 result.resume = None   # never surface unverified resume content
                 return result
 
-            # 4. Advisory AI review for subtle exaggeration. Never blocks; failures are tolerated.
-            pairs = []
-            for i, b in enumerate(tailored.bullets):
-                idx, _, _ = best_source(b, resume["bullets"])
-                pairs.append({"index": i, "original": resume["bullets"][idx], "tailored": b})
-            try:
-                result.review_notes = self._call(trace_id, "judge", lambda: self.judge.run(pairs), json.dumps(pairs))
-                if result.review_notes:
-                    result.flags.append(f"reviewer_flagged_{len(result.review_notes)}")
-            except RuntimeError:
-                result.flags.append("reviewer_unavailable")
+            result.ats = ats_score(tailored, analysis)   # informational only; computed from the approved resume
 
-            # 5. Interview prep (runs after approval so gap list is trustworthy)
+            # 4. Interview prep (runs after approval so gap list is trustworthy)
             result.prep = self._call(trace_id, "coach",
                                      lambda: self.coach.run(analysis, tailored.gaps), json.dumps(analysis.__dict__))
-
-            # 6. Optional cover letter, checked like the resume. Built only from APPROVED bullets.
-            #    If it can't pass its checks it is withheld; the verified resume still stands.
-            if cover_letter:
-                self._cover_letter(trace_id, result, analysis, resume, tailored)
         except RuntimeError as e:
             result.status = "needs_human"
             result.flags.append(f"agent_failure: {e}")
         return result
-
-    def _cover_letter(self, trace_id, result, analysis, resume, tailored) -> None:
-        feedback: list[str] | None = None
-        try:
-            for loop in range(MAX_CRITIC_LOOPS + 1):
-                letter = self._call(trace_id, "letter",
-                                    lambda: self.letter_writer.run(analysis, resume, tailored, feedback),
-                                    json.dumps(tailored.bullets))
-                with self.tracer.span(trace_id, "letter_check"):
-                    issues = check_cover_letter(letter, resume, tailored.gaps)
-                result.cover_letter_issues = issues
-                if not issues:
-                    result.cover_letter = letter
-                    return
-                feedback = issues
-                result.flags.append(f"letter_rejected_loop_{loop}")
-            result.flags.append("cover_letter_withheld")      # fail closed for the letter only
-        except RuntimeError:
-            result.flags.append("cover_letter_unavailable")

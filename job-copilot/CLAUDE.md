@@ -1,28 +1,49 @@
 # Job Application Copilot: context for Claude
 
-Multi-agent Python app that tailors a resume to a job posting **without inventing experience**.
-Part of the AI-PM-portfolio repo. Work only inside `job-copilot/` unless asked otherwise.
+Multi-agent Python app that tailors a resume to a job posting without inventing experience.
+Analyzer → Tailor ⇄ Critic → Coach. The Critic is deterministic code, not a model, and unverifiable
+output is withheld (`needs_human`), never shown.
 
-## Architecture
-Guardrails → Analyzer (LLM) → Tailor (LLM) ⇄ Critic (code) → Reviewer (LLM, advisory) → Coach (LLM) → [optional] Cover Letter (LLM) ⇄ Letter checker (code)
-- `src/copilot/guardrails.py`: PII redaction, prompt-injection stripping, fabrication + claim-strength checks (verb tiers, scope words), `check_cover_letter`
-- `src/copilot/agents.py`: agent prompts + typed parsing; the Critic is deterministic code by design
-- `src/copilot/orchestrator.py`: retries (2), critic loop (1), fail closed (`needs_human`, resume withheld)
-- `src/copilot/llm.py`: `AnthropicClient` (live) and `MockClient` (offline, fault injection)
-- `src/copilot/monitoring.py`: JSONL tracing
-- `evals/`: cases + harness with release gates (pass rate 1.0, fabrication 0, PII leak 0, letter fabrication 0)
-- `demo/index.html`: browser demo (JS port of the pipeline; live mode calls Claude). Keep its Critic logic in sync with `guardrails.py`.
-- `docs/`: PRD, architecture, guardrails, monitoring, launch plan
+## Core principle
+LLMs propose, code disposes. No model output reaches the user unless the Critic approves it.
+
+## Layout
+- `src/copilot/guardrails.py`: input guardrails (PII redaction, prompt-injection removal, size limits) and the
+  fabrication check (token overlap >= 80%, no new numbers, no added strength words such as led/managed/senior)
+  plus the summary check
+- `src/copilot/ats.py`: deterministic ATS-style readiness score (0-100) for the approved resume; informational only, never gates output, keywords count only as real evidence. The demo has a JS port inside the parity block
+- `src/copilot/agents.py`: Analyzer, Tailor, Coach (LLM) and Critic (code)
+- `src/copilot/orchestrator.py`: guardrails → analyze → tailor ⇄ critic (max 1 retry) → coach; fail closed
+- `src/copilot/llm.py`: `AnthropicClient` (live) and `MockClient` (offline; `fabricate_first_n`, `inflate_first_n`)
+- `src/copilot/monitoring.py`: tracing to `logs/traces.jsonl`; no resume or JD content is stored
+- `evals/`: `cases.json` + `run_evals.py` with gates (pass_rate 1.0, fabrication_rate 0, pii_leak_rate 0)
+- `tests/`: unit tests; `tests/test_demo_parity.py` runs the demo's JS port in node against the Python originals
+- `demo/index.html`: browser demo with its own JavaScript port of the guardrails and Critic
+- `docs/`: PRD, ARCHITECTURE, GUARDRAILS (risk → control → test, plus known gaps), MONITORING, LAUNCH_PLAN
 
 ## Rules
 - Before and after any change: `python -m pytest -q` and `PYTHONPATH=src python evals/run_evals.py` must pass.
-- Never weaken the Critic or the fail-closed behavior to make a test pass.
-- Every new failure mode gets an eval case in `evals/cases.json`.
-- Update the matching doc in `docs/` when behavior changes.
+- Never loosen the Critic or let model output bypass it. Fail closed: unverified resume is set to `None`.
+- Every new failure mode gets a unit test and an eval case; update `docs/GUARDRAILS.md` (including known gaps).
+- The demo carries a JS copy of the guardrails (between the `<parity:begin>`/`<parity:end>` markers in
+  `demo/index.html`). Change a guardrail in one place and change the other; add a case to
+  `tests/parity_cases.json` so the parity test covers it. Keep that block free of DOM access.
+- Offline results come from the mock model. They validate the harness and guardrails, not live-model quality.
+  Say so when reporting results, and do not claim live quality without `evals/run_evals.py --live`.
+- Do not store resume or job-description content in traces or logs.
 
-## Next up
-1. Live evals: first run done via the demo (8/8, all gates 0, see `evals/results/`). Still to do: Python `--live` suite and a larger labeled set.
-2. Measure the Reviewer's precision on labeled pairs before considering letting it block.
-3. Keep `CASE_STUDY.md` numbers in sync with tests/evals.
-4. Record live eval results from the demo's Evals panel ("Copy results") in README and CASE_STUDY.md.
-- The demo is the published artifact source with a standalone HTML wrapper; keep its JS ports (critic, claim strength, check_cover_letter) in sync with `guardrails.py`.
+## Commands
+```bash
+pip install -r requirements.txt
+python -m pytest -q
+PYTHONPATH=src python evals/run_evals.py          # add --live (needs ANTHROPIC_API_KEY) for the real model
+PYTHONPATH=src python -m copilot.cli --resume examples/resume.txt --job examples/job.txt
+```
+CI (`.github/workflows/ci.yml`) runs the first two on every push and pull request. `live-evals.yml` is manual only (it needs the
+`ANTHROPIC_API_KEY` repository secret and costs money); `--live` skips the cases that have an `llm` fault-injection block.
+
+## Next up (from docs/LAUNCH_PLAN.md and docs/GUARDRAILS.md)
+1. Live eval run and record the results in the README.
+2. Add real, anonymised eval cases (59 synthetic ones exist across 6 role families; see docs/LAUNCH_PLAN.md).
+3. Semantic judge as a second, non-blocking fabrication signal; sampled human audits.
+4. Scan the resume text for injection too (today only the JD is scanned), and enforce `MAX_RESUME_BULLETS`.

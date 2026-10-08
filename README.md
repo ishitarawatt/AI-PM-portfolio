@@ -7,13 +7,13 @@ Two working multi-agent products, each with an AI PRD, agent architecture, eval 
 | | [Support Desk](support-desk/) | [Job Application Copilot](job-copilot/) |
 |---|---|---|
 | **Problem** | Routine support tickets wait hours for a human to click a button | Tailoring a resume takes an hour; AI tools invent experience |
-| **Agents** | Triage · Knowledge · Resolver · Policy Guard · QA Critic · Executor | Analyzer · Tailor · Critic · Reviewer · Coach · Cover Letter |
+| **Agents** | Triage · Knowledge · Resolver · Policy Guard · QA Critic · Executor | Analyzer · Tailor · Critic · Coach |
 | **Takes real actions?** | Yes: refunds, cancellations, password resets | No: drafts only |
 | **Live demo** | [Open Support Desk](https://ishitarawatt.github.io/AI-PM-portfolio/support-desk/demo/) | [Open Job Application Copilot](https://ishitarawatt.github.io/AI-PM-portfolio/job-copilot/demo/) |
 | **Hardest risk** | Moving money wrongly | Fabricated experience |
 | **Key design call** | LLMs propose, code decides; > $100 goes to a human | Critic is code and blocks inflated claims; an AI reviewer only advises |
-| **Evals** | 19 offline cases, all gates pass | 13 offline cases + **8/8 on real Claude**, all gates pass |
-| **Unit tests** | 16 | 23 |
+| **Evals** | 19 offline cases, all gates pass | 59 offline cases, all gates pass (live run not recorded yet) |
+| **Unit tests** | 16 | 69 |
 | **Case study** | [CASE_STUDY.md](support-desk/CASE_STUDY.md) | [CASE_STUDY.md](job-copilot/CASE_STUDY.md) |
 
 ## The shared idea
